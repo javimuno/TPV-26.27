@@ -60,9 +60,16 @@ Game::Game()
 	// TODO: crear los objetos del juego
 }
 
+//texturas, renderizador y ventana y cierre
 Game::~Game()
 {
-	// TODO: liberar la memoria reservada por la clase
+	for (Texture* texture : textures) {
+		delete texture;
+	}
+
+	SDL_DestroyRenderer;
+	SDL_DestroyWindow;
+	SDL_Quit();
 }
 
 void
@@ -80,12 +87,16 @@ Game::update()
 {
 	// TODO
 }
-
+ // pulsaciones, actualizaciones, dibujo y espera ms antes de nueva vuelta
 void
 Game::run()
 {
 	while (!exit) {
-		// TODO: implementar bucle del juego
+		handleEvents();
+		update();
+		render();
+
+		SDL_Delay(FRAME_PERIOD);
 	}
 }
 
