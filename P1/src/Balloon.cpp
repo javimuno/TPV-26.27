@@ -10,3 +10,12 @@ void Balloon::render() const
 {
 	textBalloon->renderFrame(rect.to_sdl(), color, 0);
 }
+
+//ture lo mantiene, false lo elimina
+bool Balloon::update(float delta)
+{
+	Vector2D v1 = vel * delta;
+	rect.move(v1);
+
+	return((rect.getTopLeftCorner().getY() + rect.getHeight())>0);
+}

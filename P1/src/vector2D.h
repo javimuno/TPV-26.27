@@ -35,6 +35,11 @@ public:
 		return *this;
 	}
 
+	Vector2D operator* (T n)const
+	{
+		return{ x * n, y * n };
+	}
+
 	// Operadores de entrada/salida
 	friend std::ostream& operator<<(std::ostream& out, const Vector2D& v) {
 		return out << '{' << v.x << ", " << v.y << '}';

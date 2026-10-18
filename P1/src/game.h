@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Balloon.h"
+#include "Bow.h"
 
 // #include "rectangle.h"
 
@@ -41,12 +42,13 @@ private:
 	std::array<Texture*, NUM_TEXTURES> textures;
 
 	void render() const;
-	void update();
+	void update(float delta);
 	void handleEvents();
 
 	bool exit;
 
 	std::vector<Balloon*> balloons;
+	Bow* mainBow;
 
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego

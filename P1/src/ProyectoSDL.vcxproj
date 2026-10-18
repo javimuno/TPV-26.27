@@ -98,6 +98,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Balloon.cpp" />
+    <ClCompile Include="Bow.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="rectangle.cpp" />
@@ -105,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Balloon.h" />
+    <ClInclude Include="Bow.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="rectangle.h" />
     <ClInclude Include="texture.h" />

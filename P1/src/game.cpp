@@ -63,6 +63,10 @@ Game::Game()
 	Balloon* balloon1 = new Balloon(Rectangle({ 400.0f,300.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 0);
 
 	balloons.push_back(balloon1);
+
+	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f,100.0f }, getTexture(BOW), 0, 10, false);
+
+
 }
 
 //texturas, renderizador y ventana y cierre
@@ -76,6 +80,7 @@ Game::~Game()
 		delete balloon;
 	}
 
+	
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
@@ -91,26 +96,60 @@ Game::render() const
 		balloon->render();
 	}
 
+	mainBow->render();
+
 	SDL_RenderPresent(renderer);
 
 	
 }
 
 void
-Game::update()
+Game::update(float delta)
 {
 	// TODO
+
+	int i = 0;
+
+	while (i<balloons.size())
+	{
+		if (!balloons[i]->update(delta)) {
+			delete balloons[i];
+			balloons.erase(balloons.begin() + i);
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+	/*for (int i = 0; i < balloons.size(); ) {
+		if (!balloons[i]->update(delta)) {
+			delete balloons[i];
+			balloons.erase(balloons.begin() + i);
+		}
+		else
+		{
+			i++;
+		}
+	}*/
 }
  // pulsaciones, actualizaciones, dibujo y espera ms antes de nueva vuelta
 void
 Game::run()
 {
+	Uint64 startTime, frameTime;
+
 	while (!exit) {
+
+		startTime = SDL_GetTicks();
 		handleEvents();
-		update();
+		update(FRAME_PERIOD/1000.0f);
 		render();
 
-		SDL_Delay(FRAME_PERIOD);
+		frameTime = SDL_GetTicks() - startTime;
+
+		if(frameTime<FRAME_PERIOD)
+		SDL_Delay(FRAME_PERIOD-frameTime);
 	}
 }
 
