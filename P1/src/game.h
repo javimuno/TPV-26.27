@@ -8,6 +8,7 @@
 
 #include "Balloon.h"
 #include "Bow.h"
+#include "Arrow.h"
 
 // #include "rectangle.h"
 
@@ -47,11 +48,14 @@ private:
 
 	bool exit;
 
-	std::vector<Balloon*> balloons;
-	Bow* mainBow;
+	
 
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
+
+	std::vector<Balloon*> balloons;
+	Bow* mainBow;
+	std::vector<Arrow*> arrows;
 
 public:
 	Game();

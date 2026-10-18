@@ -29,15 +29,15 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 };
 
 Game::Game()
-  : exit(false)
+	: exit(false)
 {
 	// Carga SDL y crea la ventana con su renderizador
 	if (!SDL_Init(SDL_INIT_VIDEO))
 		throw "SDL_Init: "s + SDL_GetError();
 
 	if (!SDL_CreateWindowAndRenderer(WINDOW_TITLE,
-	                                 WINDOW_WIDTH, WINDOW_HEIGHT,
-	                                 0, &window, &renderer))
+		WINDOW_WIDTH, WINDOW_HEIGHT,
+		0, &window, &renderer))
 		throw "window or renderer: "s + SDL_GetError();
 
 	// Carga las texturas al inicio
@@ -62,10 +62,15 @@ Game::Game()
 
 	Balloon* balloon1 = new Balloon(Rectangle({ 400.0f,300.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 0);
 
+	//globos
 	balloons.push_back(balloon1);
+	//arco
+	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW), 0, 10, false);
+	//flechas
 
-	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f,0.0f }, getTexture(BOW), 0, 10, false);
+	Arrow* arrow1 = new Arrow(Rectangle({ 200.0f,300.0f }, 80.0f, 20.0f), Vector2D<>(250, 0), getTexture(ARROW));
 
+	arrows.push_back(arrow1);
 
 }
 
@@ -76,7 +81,10 @@ Game::~Game()
 	for (Balloon* balloon : balloons) {
 		delete balloon;
 	}
-
+	for (Arrow* arrow : arrows) {
+		delete arrow;
+	}
+	
 	delete mainBow;
 
 	for (Texture* texture : textures) {
@@ -99,7 +107,9 @@ Game::render() const
 	for (Balloon* balloon : balloons) {
 		balloon->render();
 	}
-
+	for (Arrow* arrow : arrows) {
+		arrow->render();
+	}
 	mainBow->render();
 
 	SDL_RenderPresent(renderer);
@@ -125,17 +135,20 @@ Game::update(float delta)
 			i++;
 		}
 	}
-	mainBow->update(delta);
-	/*for (int i = 0; i < balloons.size(); ) {
-		if (!balloons[i]->update(delta)) {
-			delete balloons[i];
-			balloons.erase(balloons.begin() + i);
+	i = 0;
+	while (i<arrows.size())
+	{
+		if (!arrows[i]->update(delta)) {
+			delete arrows[i];
+			arrows.erase(arrows.begin() + i);
 		}
 		else
 		{
 			i++;
 		}
-	}*/
+	}
+	mainBow->update(delta);
+	
 }
  // pulsaciones, actualizaciones, dibujo y espera ms antes de nueva vuelta
 void
