@@ -6,6 +6,7 @@
 #include "vector2D.h"
 
 
+
 class Bow
 {
 
@@ -24,7 +25,7 @@ public:
 
 	Bow(const Rectangle& rect, const Vector2D<>& vel,Texture* textBow,int col, const int numArrows, const bool armed);
 	void render() const;
-	void update(float delta);
+	bool update(float delta);
 	void handleEvent(const SDL_Event& event);
 
 

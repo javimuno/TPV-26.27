@@ -72,15 +72,18 @@ Game::Game()
 //texturas, renderizador y ventana y cierre
 Game::~Game()
 {
-	for (Texture* texture : textures) {
-		delete texture;
-	}
 
 	for (Balloon* balloon : balloons) {
 		delete balloon;
 	}
 
 	delete mainBow;
+
+	for (Texture* texture : textures) {
+		delete texture;
+	}
+
+
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
