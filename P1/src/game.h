@@ -6,6 +6,8 @@
 #include <istream>
 #include <vector>
 
+#include "Balloon.h"
+
 // #include "rectangle.h"
 
 // Declaraciones anticipadas
@@ -29,6 +31,7 @@ public:
 	{
 		BOW = 0,
 		ARROW,
+		BALLOON,
 		NUM_TEXTURES
 	};
 
@@ -42,6 +45,8 @@ private:
 	void handleEvents();
 
 	bool exit;
+
+	std::vector<Balloon*> balloons;
 
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego

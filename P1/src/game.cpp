@@ -25,6 +25,7 @@ struct TextureSpec
 constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 	TextureSpec{"bow.png", 1, 2},
 	{"arrow.png"},
+	{"balloons.png",7,6},
 };
 
 Game::Game()
@@ -58,6 +59,10 @@ Game::Game()
 	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	// TODO: crear los objetos del juego
+
+	Balloon* balloon1 = new Balloon(Rectangle({ 400.0f,300.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 0);
+
+	balloons.push_back(balloon1);
 }
 
 //texturas, renderizador y ventana y cierre
@@ -67,8 +72,12 @@ Game::~Game()
 		delete texture;
 	}
 
-	SDL_DestroyRenderer;
-	SDL_DestroyWindow;
+	for (Balloon* balloon : balloons) {
+		delete balloon;
+	}
+
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
 	SDL_Quit();
 }
 
@@ -78,8 +87,13 @@ Game::render() const
 	SDL_RenderClear(renderer);
 
 	// TODO
+	for (Balloon* balloon : balloons) {
+		balloon->render();
+	}
 
 	SDL_RenderPresent(renderer);
+
+	
 }
 
 void
