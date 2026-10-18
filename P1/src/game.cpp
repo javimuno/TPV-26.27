@@ -64,7 +64,7 @@ Game::Game()
 
 	balloons.push_back(balloon1);
 
-	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f,100.0f }, getTexture(BOW), 0, 10, false);
+	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f,0.0f }, getTexture(BOW), 0, 10, false);
 
 
 }
@@ -80,7 +80,8 @@ Game::~Game()
 		delete balloon;
 	}
 
-	
+	delete mainBow;
+
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
@@ -121,7 +122,7 @@ Game::update(float delta)
 			i++;
 		}
 	}
-
+	mainBow->update(delta);
 	/*for (int i = 0; i < balloons.size(); ) {
 		if (!balloons[i]->update(delta)) {
 			delete balloons[i];
@@ -164,6 +165,8 @@ Game::handleEvents()
 			exit = true;
 
 		// TODO
+
+		mainBow->handleEvent(event);
 	}
 }
 

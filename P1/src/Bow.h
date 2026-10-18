@@ -3,6 +3,8 @@
 #include "rectangle.h"
 #include "texture.h"
 
+#include "vector2D.h"
+
 
 class Bow
 {
@@ -12,7 +14,7 @@ private:
 	Rectangle rect;
 	Vector2D<> vel;
 	Texture* textBow;
-	int picture;
+	int col;
 	int numArrows;
 	bool armed;
 
@@ -20,10 +22,10 @@ private:
 
 public:
 
-	Bow(const Rectangle& rect, const Vector2D<>& vel,Texture* textBow,int picture, const int numArrows, const bool armed);
-	void render();
-	bool update(float delta);
-
+	Bow(const Rectangle& rect, const Vector2D<>& vel,Texture* textBow,int col, const int numArrows, const bool armed);
+	void render() const;
+	void update(float delta);
+	void handleEvent(const SDL_Event& event);
 
 
 };
