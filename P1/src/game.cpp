@@ -60,9 +60,9 @@ Game::Game()
 
 	// TODO: crear los objetos del juego
 
-	Balloon* balloon1 = new Balloon(Rectangle({ 270.0f,200.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -65.0f), getTexture(BALLOON), 1);
-	Balloon* balloon2 = new Balloon(Rectangle({ 400.0f,300.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -75.0f), getTexture(BALLOON), 0);
-	Balloon* balloon3 = new Balloon(Rectangle({ 520.0f,120.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 3);
+	Balloon* balloon1 = new Balloon(Rectangle({ 270.0f,600.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -65.0f), getTexture(BALLOON), 1);
+	Balloon* balloon2 = new Balloon(Rectangle({ 400.0f,580.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -75.0f), getTexture(BALLOON), 0);
+	Balloon* balloon3 = new Balloon(Rectangle({ 520.0f,550.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 3);
 
 	//globos
 	balloons.push_back(balloon1);
@@ -154,6 +154,13 @@ Game::update(float delta)
 			i++;
 		}
 	}
+
+	balloonTimer += delta;
+
+	if (balloonTimer >= BALLOON_INTERVAL) {
+		addBalloon();
+		balloonTimer=0;
+	}
 	mainBow->update(delta);
 	
 }
@@ -191,6 +198,37 @@ Game::handleEvents()
 
 		mainBow->handleEvent(event);
 	}
+}
+
+void 
+Game::addBalloon()
+{
+
+	//colores
+
+	int minC = 0;
+	int maxC = 6;
+
+	std::uniform_int_distribution<int> cDistribution(minC, maxC);
+	int c = cDistribution(randomGenerator);
+
+	//franja del rango de espacio aleatorio
+	float minX = WINDOW_WIDTH / 3.0f;
+	float maxX = WINDOW_WIDTH - BALLOON_WIDTH;
+
+	std::uniform_real_distribution<float> xDistribution(minX, maxX);
+	float x = xDistribution(randomGenerator);
+
+	//velocidades aleatorias
+
+	float minV = 50.0f;
+	float maxV = 80.0f;
+
+	std::uniform_real_distribution<float> vDistribution(minV, maxV);
+	float v = vDistribution(randomGenerator);
+
+	//creacion
+	balloons.push_back(new Balloon(Rectangle({x,WINDOW_HEIGHT }, BALLOON_WIDTH, BALLOON_WIDTH), Vector2D<>(0, -v), getTexture(BALLOON), c));
 }
 
 void

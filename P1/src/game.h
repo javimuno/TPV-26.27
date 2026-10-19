@@ -5,6 +5,7 @@
 #include <array>
 #include <istream>
 #include <vector>
+#include <random>
 
 #include "Balloon.h"
 #include "Bow.h"
@@ -28,6 +29,11 @@ public:
 	// Tamaño real de la ventana
 	static constexpr int WINDOW_WIDTH = 800;
 	static constexpr int WINDOW_HEIGHT = 600;
+	static constexpr int BALLOON_WIDTH = 64.0f;
+
+	// Timer para el spawn de balloons y acumulador
+	static constexpr float BALLOON_INTERVAL = 0.5f;
+	float balloonTimer = 0.0f;
 
 	enum TextureName
 	{
@@ -41,10 +47,12 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	std::array<Texture*, NUM_TEXTURES> textures;
+	std::mt19937_64 randomGenerator{ std::random_device{}() };
 
 	void render() const;
 	void update(float delta);
 	void handleEvents();
+	void addBalloon();
 
 	bool exit;
 
