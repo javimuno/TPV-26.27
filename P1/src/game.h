@@ -67,6 +67,9 @@ public:
 	// Ejecuta el bucle principal del juego
 	void run();
 
+	//cargar flecha
+	void addArrow(const Rectangle& rect, const Vector2D<>& vel);
+
 	// Comprueba si hay algún objeto colocado en ese rectángulo
 	// bool checkCollision(const Rectangle& rect);
 };

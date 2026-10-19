@@ -60,17 +60,24 @@ Game::Game()
 
 	// TODO: crear los objetos del juego
 
-	Balloon* balloon1 = new Balloon(Rectangle({ 400.0f,300.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 0);
+	Balloon* balloon1 = new Balloon(Rectangle({ 270.0f,200.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -65.0f), getTexture(BALLOON), 1);
+	Balloon* balloon2 = new Balloon(Rectangle({ 400.0f,300.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -75.0f), getTexture(BALLOON), 0);
+	Balloon* balloon3 = new Balloon(Rectangle({ 520.0f,120.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 3);
 
 	//globos
 	balloons.push_back(balloon1);
+	balloons.push_back(balloon2);
+	balloons.push_back(balloon3);
+
 	//arco
-	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW), 0, 10, false);
+	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW), 0, 10, false,this);
+
 	//flechas
+	//addArrow(Rectangle({ 200.0f,300.0f }, 80.0f, 20.0f), Vector2D<>(250, 0));
 
-	Arrow* arrow1 = new Arrow(Rectangle({ 200.0f,300.0f }, 80.0f, 20.0f), Vector2D<>(250, 0), getTexture(ARROW));
+	/*Arrow* arrow1 = new Arrow(Rectangle({ 200.0f,300.0f }, 80.0f, 20.0f), Vector2D<>(250, 0), getTexture(ARROW));
 
-	arrows.push_back(arrow1);
+	arrows.push_back(arrow1);*/
 
 }
 
@@ -184,6 +191,12 @@ Game::handleEvents()
 
 		mainBow->handleEvent(event);
 	}
+}
+
+void
+Game::addArrow(const Rectangle& rect, const Vector2D<>& vel) {
+
+	arrows.push_back(new Arrow(rect, vel, getTexture(ARROW)));
 }
 
 // bool
