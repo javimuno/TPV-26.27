@@ -1,0 +1,28 @@
+# Visual Studio
+.vs/
+**/.vs/
+
+# Compilación
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+out/
+build/
+
+# Archivos temporales
+*.user
+*.suo
+*.pdb
+*.ilk
+*.obj
+*.pch
+*.cache
+*.log
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
+desktop.ini
