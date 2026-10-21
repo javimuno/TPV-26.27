@@ -29,6 +29,10 @@ public:
 	{
 		BOW = 0,
 		ARROW,
+		BALLOONS,
+		ARCHER,
+		REWARDS,
+		DIGITS,
 		NUM_TEXTURES
 	};
 
