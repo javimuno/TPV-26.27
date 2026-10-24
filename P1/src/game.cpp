@@ -5,6 +5,7 @@
 #include <SDL3_image/SDL_image.h>
 
 #include "texture.h"
+#include "Balloon.h"
 
 using namespace std;
 
@@ -74,7 +75,7 @@ Game::render() const
 {
 	SDL_RenderClear(renderer);
 
-	// TODO
+	b->render();
 
 	SDL_RenderPresent(renderer);
 }
@@ -88,8 +89,17 @@ Game::update()
 void
 Game::run()
 {
+	b = new Balloon(getTexture(static_cast<Game::TextureName>(Game::BALLOONS)), { 50, 50 }, { 0, 0 });
+	const Uint32 frameDelay = FRAME_RATE;
 	while (!exit) {
 		// TODO: implementar bucle del juego
+		Uint32 frameStart = SDL_GetTicks();
+
+		render();
+
+		Uint32 frameTime = SDL_GetTicks() - frameStart;
+		if (frameDelay > frameTime)
+			SDL_Delay(frameDelay - frameTime);
 	}
 }
 

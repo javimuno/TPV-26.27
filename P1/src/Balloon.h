@@ -1,17 +1,22 @@
 #pragma once
+#include "vector2D.h"
 
 class Rectangle;
-class Vector2D;
+class Texture;
 class Balloon
 {
 private:
 	Rectangle* rect;
-	Vector2D* vel;
+	Vector2D<float> vel;
+	Point2D<float> pos;
 	int color;
+	Texture* texture;
 
 public: 
-	Balloon();
+	Balloon(Texture* tex, const Point2D<float>& position, const Vector2D<float>& velocity);
 	~Balloon();
 	bool hit(const Rectangle& obj);
+	void render() const;
+	bool update(float delta);
 };
 

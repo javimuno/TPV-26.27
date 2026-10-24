@@ -1,2 +1,4 @@
-﻿  rectangle.cpp
+﻿  game.cpp
+C:\Users\Aida\Documents\GitHub\TPV-26.27\P1\src\game.cpp(96,21): warning C4244: 'inicializando': conversión de 'Uint64' a 'Uint32'; posible pérdida de datos
+C:\Users\Aida\Documents\GitHub\TPV-26.27\P1\src\game.cpp(100,20): warning C4244: 'inicializando': conversión de 'Uint64' a 'Uint32'; posible pérdida de datos
   src.vcxproj -> C:\Users\Aida\Documents\GitHub\TPV-26.27\P1\bin\srcDebug.exe

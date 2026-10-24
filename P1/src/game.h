@@ -10,6 +10,7 @@
 
 // Declaraciones anticipadas
 class Texture;
+class Balloon;
 
 /**
  * Clase principal del juego.
@@ -49,6 +50,8 @@ private:
 
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
+
+	Balloon* b;
 
 public:
 	Game();
