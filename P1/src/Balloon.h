@@ -13,7 +13,7 @@ private:
 	Texture* texture;
 
 public: 
-	Balloon(Texture* tex, const Point2D<float>& position, const Vector2D<float>& velocity);
+	Balloon(Texture* tex, const Point2D<float>& position, const Vector2D<float>& velocity, int c);
 	~Balloon();
 	bool hit(const Rectangle& obj);
 	void render() const;

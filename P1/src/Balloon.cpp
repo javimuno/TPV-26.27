@@ -3,8 +3,8 @@
 #include "texture.h"
 #include "rectangle.h"
 
-Balloon::Balloon(Texture* tex, const Point2D<float>& position, const Vector2D<float>& velocity) 
-	: texture(tex), pos(position), vel(velocity)
+Balloon::Balloon(Texture* tex, const Point2D<float>& position, const Vector2D<float>& velocity, int c) 
+	: texture(tex), pos(position), vel(velocity), color(c)
 {
 	int w = float(texture->getFrameWidth());
 	int h = float(texture->getFrameHeight());
@@ -26,5 +26,5 @@ bool Balloon::update(float delta)
 }
 
 void Balloon::render() const {
-	texture->render(rect->to_sdl());
+	texture->renderFrame(rect->to_sdl(), color, 0);
 }

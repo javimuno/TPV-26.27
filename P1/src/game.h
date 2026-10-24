@@ -51,7 +51,7 @@ private:
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
 
-	Balloon* b;
+	std::vector<Balloon*> balloons;
 
 public:
 	Game();

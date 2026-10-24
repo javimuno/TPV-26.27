@@ -63,6 +63,9 @@ Game::Game()
 	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 	// TODO: crear los objetos del juego
+	Balloon* balloon1 = new Balloon(getTexture(BALLOONS), { 400.0f,300.0f }, { 0.0f, -50.0f }, 0);
+
+	balloons.push_back(balloon1);
 }
 
 Game::~Game()
@@ -75,7 +78,8 @@ Game::render() const
 {
 	SDL_RenderClear(renderer);
 
-	b->render();
+	for (auto& ballon : balloons)
+		ballon->render();
 
 	SDL_RenderPresent(renderer);
 }
@@ -89,7 +93,6 @@ Game::update()
 void
 Game::run()
 {
-	b = new Balloon(getTexture(static_cast<Game::TextureName>(Game::BALLOONS)), { 50, 50 }, { 0, 0 });
 	const Uint32 frameDelay = FRAME_RATE;
 	while (!exit) {
 		// TODO: implementar bucle del juego
