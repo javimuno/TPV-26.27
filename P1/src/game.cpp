@@ -1,8 +1,8 @@
 #include "game.h"
 
 #include <string>
-
 #include <SDL3_image/SDL_image.h>
+#include <fstream>
 
 #include "texture.h"
 
@@ -28,9 +28,50 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 	{"balloons.png",7,6},
 };
 
+void Game::loadLevel()
+{
+	std::ifstream file(std::string (LEVEL_ROOT) + "1.txt");
+
+	if (!file.is_open()) {
+		throw std::string("No se puede abrir el archivo de nivel");
+	}
+
+	std::string option;
+	
+	file >> option;
+
+	while (!file.fail())
+	{
+		std::cout << "opcion leida: " << option << std::endl;
+		file.ignore(1000, '\n');
+		file >> option;
+
+		if (option == "arrows") {
+			file >> iniArrows_file;
+
+			if (file.fail()||iniArrows_file<0) {
+				throw std::string("Valor de arrows no valido");
+			}
+		}
+
+		else if (option == "baldelay") {
+			int baldelayAux;
+			file >> baldelayAux;
+			balloonInterval_file = baldelayAux / 1000.0f;
+
+			if (file.fail()) {
+				throw std::string("Valor de baldelay no valido");
+			}
+		}
+	}
+}
+
 Game::Game()
 	: exit(false)
 {
+	//carga del nivel
+	loadLevel();
+
 	// Carga SDL y crea la ventana con su renderizador
 	if (!SDL_Init(SDL_INIT_VIDEO))
 		throw "SDL_Init: "s + SDL_GetError();
@@ -60,6 +101,8 @@ Game::Game()
 
 	// TODO: crear los objetos del juego
 
+	
+
 	Balloon* balloon1 = new Balloon(Rectangle({ 270.0f,600.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -65.0f), getTexture(BALLOON), 1);
 	Balloon* balloon2 = new Balloon(Rectangle({ 400.0f,580.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -75.0f), getTexture(BALLOON), 0);
 	Balloon* balloon3 = new Balloon(Rectangle({ 520.0f,550.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 3);
@@ -70,7 +113,7 @@ Game::Game()
 	balloons.push_back(balloon3);
 
 	//arco
-	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW), 0, 10, false,this);
+	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW), 0,iniArrows_file, false,this);
 
 	//flechas
 	//addArrow(Rectangle({ 200.0f,300.0f }, 80.0f, 20.0f), Vector2D<>(250, 0));
@@ -159,9 +202,9 @@ Game::update(float delta)
 
 	balloonTimer += delta;
 
-	if (balloonTimer >= BALLOON_INTERVAL) {
+	if (balloonTimer >= balloonInterval_file) {
 		addBalloon();
-		balloonTimer=0;
+		balloonTimer=0.0f;
 	}
 	mainBow->update(delta);
 

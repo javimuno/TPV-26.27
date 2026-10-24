@@ -4,12 +4,23 @@
 //
 // Plantilla de proyecto con SDL
 //
+#include <iostream>
+#include <string>
 
 #include "game.h"
 
 int main(int argc, char* argv[])
 {
-	Game().run();
+	try
+	{
+		Game().run();
+	}
+	catch (const std::string& error)
+	{
+		std::cout << "Error: " << error << std::endl;
+		return 1;
+	}
+	
 
 	// TODO: manejar excepciones
 

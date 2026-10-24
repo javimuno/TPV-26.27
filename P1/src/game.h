@@ -67,6 +67,9 @@ private:
 	std::vector<Arrow*> arrows;
 
 	int score=0;
+	int iniArrows_file=10;
+	float balloonInterval_file=0.5f;
+	void loadLevel();
 
 public:
 	Game();
