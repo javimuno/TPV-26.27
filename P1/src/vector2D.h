@@ -8,15 +8,15 @@
  */
 template<typename T = float>
 class Vector2D {
-    T x, y;
+	T x, y;
 
 public:
-    Vector2D(T x, T y) : x(x), y(y) {}
-    Vector2D() : Vector2D(0, 0) {}
+	Vector2D(T x, T y) : x(x), y(y) { }
+	Vector2D() : Vector2D(0, 0) { }
 
-    // Coordenadas del vector
-    const T& getX() const { return x; }
-    const T& getY() const { return y; }
+	// Coordenadas del vector
+	T getX() const { return x; }
+	T getY() const { return y; }
 
     // Operadores aritméticos
     Vector2D operator+(const Vector2D& otro) const { return { x + otro.x, y + otro.y }; }

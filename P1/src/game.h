@@ -5,12 +5,16 @@
 #include <array>
 #include <istream>
 #include <vector>
+#include <random>
+
+#include "Balloon.h"
+#include "Bow.h"
+#include "Arrow.h"
 
 // #include "rectangle.h"
 
 // Declaraciones anticipadas
 class Texture;
-class Balloon;
 
 /**
  * Clase principal del juego.
@@ -25,15 +29,20 @@ public:
 	// Tamaño real de la ventana
 	static constexpr int WINDOW_WIDTH = 800;
 	static constexpr int WINDOW_HEIGHT = 600;
+	static constexpr float GAME_SCALE = 0.25f;
+	static constexpr float MAX_SPEED_BALLONS = 200.0f;
+	static constexpr float MIN_SPEED_BALLONS = 150.0f;
+
+	static constexpr int NUM_BALLONS = 6;
+
+	static constexpr float DELAY_BALLOON = 0.5f;
+	float timerBallons = 0.0f;
 
 	enum TextureName
 	{
 		BOW = 0,
 		ARROW,
-		BALLOONS,
-		ARCHER,
-		REWARDS,
-		DIGITS,
+		BALLOON,
 		NUM_TEXTURES
 	};
 
@@ -41,17 +50,20 @@ private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	std::array<Texture*, NUM_TEXTURES> textures;
+	std::mt19937_64 randomGenerator{ std::random_device{}() };
 
 	void render() const;
-	void update();
+	void update(float delta);
 	void handleEvents();
+	void addBalloon();
 
 	bool exit;
 
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
-
 	std::vector<Balloon*> balloons;
+	std::vector<Arrow*> arrows;
+	Bow* playerBow;
 
 public:
 	Game();
@@ -60,11 +72,16 @@ public:
 	// Obtiene una textura por su nombre
 	Texture* getTexture(TextureName name) const;
 
+	SDL_Renderer* getRenderer() { return renderer; };
+
 	// Ejecuta el bucle principal del juego
 	void run();
 
+	//cargar flecha
+	void addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel);
+
 	// Comprueba si hay algún objeto colocado en ese rectángulo
-	// bool checkCollision(const Rectangle& rect);
+	bool checkCollision(const Rectangle& rect);
 };
 
 inline Texture*

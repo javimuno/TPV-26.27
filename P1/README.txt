@@ -1,20 +1,14 @@
-# Plantilla para proyectos con SDL en Visual Studio
+# Material para la práctica 1
 
 Instrucciones
 -------------
 
-* Si quieres añadir una nueva biblioteca, copia su directorio en el directorio libs de la solución y añade los nuevos elementos al archivo ProyectoSDL.props: IncludePath, LibraryPath, AdditionalDependencies y LocalDebuggerEnvironment.
+* Copia el material sobre la plantilla para proyectos SDL que se puede descargar del campus. Elimina antes los assets para los ejercicios del tema 3, ya que no se usarán en la práctica. 
 
-* Los proyectos se deberían ejecutar sin problemas desde Visual Studio, pero los programas compilados que quedan en la carpeta bin (*Debug.exe y *Release.exe) al ejecutarse directamente mostrarán un mensaje de error indicando que la biblioteca SDL3.dll u otras no están disponibles. Esto se puede evitar copiando los archivos .dll en SDL3* a la carpeta bin del proyecto.
+* La carpeta assets de este archivo incluye texturas en la carpeta images y archivos de nivel en el directorio levels.
 
-* El proyecto tiene tres configuraciones: Debug, Sanitize y Release. Las dos primeras compilan el programa para depuración y son las que conviene usar durante el desarrollo. La diferencia entre ambas es que Debug comprueba fugas de memoria con checkML.h mientras que Sanitize comprueba errores de acceso a memoria con AddressSanitizer (ambos herramientas son incompatibles). La configuración Release compila una versión optimizada para su uso corriente.
+* La carpeta src (donde ha de quedar incluido todo el código de las prácticas) contiene las implementaciones completas de las clases Texture y Rectangle (aunque está depende de Vector2D) y esqueletos para la función main y las clases Game y Vector2D.
 
-* Si quieres crear nuevos proyectos en la misma solución recuerda añadir la página de propiedades ProyectosSDL.props al nuevo proyecto: en el menú Ver -> Otras ventanas -> Administrador de propiedades -> Agregar hoja de propiedades existente, busca el archivo ProyectosSDL.props para incorporarlo. Sin hacer esto es posible que el compilador no encuentre la biblioteca SDL o se produzcan otros errores de compilación.
+* Agrega los archivos texture.cpp, rectangle.cpp y game.cpp al proyecto de Visual Studio haciendo clic con el botón derecho sobre «Archivos de código fuente» y el menú sobre «Agregar» y «Elemento existente...». Si usas CMake, añade los mismos archivos a la lista de «add_executable(ProyectoSDL ...)» al final del archivo.
 
-Bibliotecas
------------
-
-* SDL3 3.2.24
-* SDL3_image 3.2.4
-
-Más información sobre las bibliotecas en https://www.libsdl.org/.
+* El proyecto no compilará a falta de añadir un par de métodos sencillos a la clase Vector2D. Cuando los añadas, saldrá una pantalla negra que no responde. Sin embargo, cuando completes el bucle del juego con su llamada handleEvents, la ventana responderá y se cerrará cuando se pulse el botón correspondiente.

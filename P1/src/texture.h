@@ -53,9 +53,9 @@ public:
 	void renderRect(const SDL_FRect& source) const;
 	/// Render the whole picture with additional options from SDL_RenderCopyEx
 	void render(const SDL_FRect& target,
-		double angle,
-		const SDL_FPoint* center = nullptr,
-		SDL_FlipMode flip = SDL_FLIP_NONE) const;
+	            double angle,
+	            const SDL_FPoint* center = nullptr,
+	            SDL_FlipMode flip = SDL_FLIP_NONE) const;
 
 	/// Render a frame to the given rectangle
 	void renderFrame(const SDL_FRect& target, int row, int col) const;
@@ -63,11 +63,11 @@ public:
 	void renderFrame(const SDL_FRect& target, int row, int col, SDL_FlipMode flip) const;
 	/// Render a frame with additional options
 	void renderFrame(const SDL_FRect& target,
-		int row,
-		int col,
-		double angle,
-		const SDL_FPoint* center = nullptr,
-		SDL_FlipMode flip = SDL_FLIP_NONE) const;
+	                 int row,
+	                 int col,
+	                 double angle,
+	                 const SDL_FPoint* center = nullptr,
+	                 SDL_FlipMode flip = SDL_FLIP_NONE) const;
 
 	/// Render the whole picture to the given rectangle with modified color
 	void render(const SDL_FRect& target, SDL_Color color) const;
