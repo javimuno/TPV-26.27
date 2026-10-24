@@ -34,6 +34,7 @@ public:
 	// Timer para el spawn de balloons y acumulador
 	static constexpr float BALLOON_INTERVAL = 0.5f;
 	float balloonTimer = 0.0f;
+	void drawDebugRect(const Rectangle& rect) const;
 
 	enum TextureName
 	{
@@ -79,7 +80,7 @@ public:
 	void addArrow(const Rectangle& rect, const Vector2D<>& vel);
 
 	// Comprueba si hay algún objeto colocado en ese rectángulo
-	// bool checkCollision(const Rectangle& rect);
+	 bool checkCollision(const Rectangle& rect);
 };
 
 inline Texture*

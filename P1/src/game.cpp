@@ -234,12 +234,29 @@ Game::addBalloon()
 void
 Game::addArrow(const Rectangle& rect, const Vector2D<>& vel) {
 
-	arrows.push_back(new Arrow(rect, vel, getTexture(ARROW)));
+	arrows.push_back(new Arrow(rect, vel, getTexture(ARROW),this));
 }
 
-// bool
-// Game::checkCollision(const Rectangle& rect)
-// {
-//	// TODO
-//	return false;
-// }
+ bool
+ Game::checkCollision(const Rectangle& rect)
+ {
+	 for (Balloon* balloon : balloons) {
+		 if (balloon->hit(rect)) {
+			 return true;
+		}
+	}
+	 return false;
+ }
+
+ void Game::drawDebugRect(const Rectangle& rect) const
+ {
+	 SDL_FRect sdlRect = rect.to_sdl();
+
+	 Uint8 r, g, b, a;
+	 SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a);
+
+	 SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	 SDL_RenderRect(renderer, &sdlRect);
+
+	 SDL_SetRenderDrawColor(renderer, r, g, b, a);
+ }

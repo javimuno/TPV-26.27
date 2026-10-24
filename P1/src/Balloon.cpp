@@ -19,3 +19,17 @@ bool Balloon::update(float delta)
 
 	return((rect.getTopLeftCorner().getY() + rect.getHeight())>0);
 }
+
+bool Balloon::hit(const Rectangle& obj)
+{
+	if (rect.hasIntersection(obj)&&beenHit==false) {
+		beenHit = true;
+		std::cout << "globo golpeado" << std::endl;
+		return true;
+	}
+	
+	else
+	{
+		return false;
+	}
+}
