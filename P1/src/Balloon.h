@@ -13,6 +13,9 @@ private:
 	Texture* textBalloon;
 	int color;
 	bool beenHit=false;
+	int col=0;
+	float acT = 0.0f;
+	const float tExp=0.1f;
 
 
 
