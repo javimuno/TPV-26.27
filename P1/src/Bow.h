@@ -28,6 +28,7 @@ public:
 	void render() const;
 	bool update(float delta);
 	void handleEvent(const SDL_Event& event);
+	bool hasArrows() const;
 
 
 };

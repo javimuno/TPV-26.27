@@ -66,6 +66,8 @@ private:
 	Bow* mainBow;
 	std::vector<Arrow*> arrows;
 
+	int score=0;
+
 public:
 	Game();
 	~Game();

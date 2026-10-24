@@ -127,6 +127,8 @@ Game::render() const
 void
 Game::update(float delta)
 {
+
+	
 	// TODO
 
 	int i = 0;
@@ -162,6 +164,13 @@ Game::update(float delta)
 		balloonTimer=0;
 	}
 	mainBow->update(delta);
+
+	//Fin de partida
+
+	if (!mainBow->hasArrows() && arrows.empty()) {
+		std::cout << "Fin de partida" << std::endl;
+		exit = true;
+	}
 	
 }
  // pulsaciones, actualizaciones, dibujo y espera ms antes de nueva vuelta
@@ -242,6 +251,8 @@ Game::addArrow(const Rectangle& rect, const Vector2D<>& vel) {
  {
 	 for (Balloon* balloon : balloons) {
 		 if (balloon->hit(rect)) {
+			 score += 10;
+			 std::cout << "Puntuacion: " << score << "\n";
 			 return true;
 		}
 	}

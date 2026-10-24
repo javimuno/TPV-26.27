@@ -27,7 +27,7 @@ bool Balloon::update(float delta)
 			col++;
 		}
 	}
-	if (col > 5)return false;
+	if (col > 5)return false; //fin animacion = eliminar
 
 	return((rect.getTopLeftCorner().getY() + rect.getHeight())>0);
 }

@@ -94,3 +94,9 @@ void Bow::handleEvent(const SDL_Event& event)
 	}
 
 }
+
+bool Bow::hasArrows() const
+{
+	return (numArrows > 0 || armed );
+	
+}
