@@ -32,8 +32,8 @@ public:
 	static constexpr int BALLOON_WIDTH = 64.0f;
 
 	// Timer para el spawn de balloons y acumulador
-	static constexpr float BALLOON_INTERVAL = 0.5f;
-	float balloonTimer = 0.0f;
+	//static constexpr float BALLOON_INTERVAL = 0.5f;
+	
 	void drawDebugRect(const Rectangle& rect) const;
 
 	enum TextureName
@@ -66,9 +66,12 @@ private:
 	Bow* mainBow;
 	std::vector<Arrow*> arrows;
 
+	float balloonTimer = 0.0f;
 	int score=0;
 	int iniArrows_file=10;
 	float balloonInterval_file=0.5f;
+
+
 	void loadLevel();
 
 public:

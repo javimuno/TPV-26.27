@@ -43,8 +43,7 @@ void Game::loadLevel()
 	while (!file.fail())
 	{
 		std::cout << "opcion leida: " << option << std::endl;
-		file.ignore(1000, '\n');
-		file >> option;
+		
 
 		if (option == "arrows") {
 			file >> iniArrows_file;
@@ -56,13 +55,16 @@ void Game::loadLevel()
 
 		else if (option == "baldelay") {
 			int baldelayAux;
-			file >> baldelayAux;
-			balloonInterval_file = baldelayAux / 1000.0f;
+			file >> baldelayAux;			
 
-			if (file.fail()) {
+			if (file.fail() || baldelayAux<=0) {
 				throw std::string("Valor de baldelay no valido");
 			}
+			balloonInterval_file = baldelayAux / 1000.0f;
 		}
+
+		file.ignore(1000, '\n');
+		file >> option;
 	}
 }
 
@@ -92,7 +94,13 @@ Game::Game()
 		}
 	}
 	catch (...) {
-		// TODO: liberar la memoria reservada
+		for (Texture* texture : textures) {
+			delete texture;
+		}
+
+		SDL_DestroyRenderer(renderer);
+		SDL_DestroyWindow(window);
+		SDL_Quit();
 		throw; // relanza la excepción
 	}
 
@@ -101,26 +109,10 @@ Game::Game()
 
 	// TODO: crear los objetos del juego
 
-	
-
-	Balloon* balloon1 = new Balloon(Rectangle({ 270.0f,600.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -65.0f), getTexture(BALLOON), 1);
-	Balloon* balloon2 = new Balloon(Rectangle({ 400.0f,580.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -75.0f), getTexture(BALLOON), 0);
-	Balloon* balloon3 = new Balloon(Rectangle({ 520.0f,550.0f }, 64.0f, 64.0f), Vector2D<>(0.0f, -50.0f), getTexture(BALLOON), 3);
-
-	//globos
-	balloons.push_back(balloon1);
-	balloons.push_back(balloon2);
-	balloons.push_back(balloon3);
-
 	//arco
 	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW), 0,iniArrows_file, false,this);
 
-	//flechas
-	//addArrow(Rectangle({ 200.0f,300.0f }, 80.0f, 20.0f), Vector2D<>(250, 0));
-
-	/*Arrow* arrow1 = new Arrow(Rectangle({ 200.0f,300.0f }, 80.0f, 20.0f), Vector2D<>(250, 0), getTexture(ARROW));
-
-	arrows.push_back(arrow1);*/
+	
 
 }
 

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <concepts>
+#include <cmath>
 
 /**
  * Vector bidimensional genérico.
@@ -38,6 +39,14 @@ public:
 	Vector2D operator* (T n)const
 	{
 		return{ x * n, y * n };
+	}
+
+	T operator*(const Vector2D& other) const{
+		return x * other.x + y * other.y;
+	}
+
+	T length() const {
+		return std::sqrt(x * x+ y * y);
 	}
 
 	// Operadores de entrada/salida

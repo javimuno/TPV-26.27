@@ -3,7 +3,7 @@
 
 Arrow::Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow, Game* game) : rect(rect), vel(vel), textArrow(textArrow), game(game)
 {
-
+	
 }
 
 void Arrow::render() const
