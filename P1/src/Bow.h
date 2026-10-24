@@ -10,7 +10,6 @@ class Rectangle;
 
 class Bow
 {
-
 private:
 
 	Rectangle* rect;

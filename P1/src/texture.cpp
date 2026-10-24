@@ -17,10 +17,18 @@ tryLoadTexture(SDL_Renderer* renderer, const char* filename)
 {
 	SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
 
-	if (texture == nullptr)
-		throw "load image texture: "s + filename;
+	if (texture == nullptr) {
+		throw "Error al cargar la imagen '"s
+			+ filename + "': " + SDL_GetError();
+	}
 
-	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+	if (!SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST)) {
+		std::string error = "Error al configurar la textura '"
+			+ std::string(filename) + "': " + SDL_GetError();
+
+		SDL_DestroyTexture(texture);
+		throw error;
+	}
 
 	return texture;
 }

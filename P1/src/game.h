@@ -33,9 +33,9 @@ public:
 	static constexpr float MAX_SPEED_BALLONS = 200.0f;
 	static constexpr float MIN_SPEED_BALLONS = 150.0f;
 
-	static constexpr int NUM_BALLONS = 6;
+	static constexpr int NUM_FRAMES_BALLONS = 6;
 
-	static constexpr float DELAY_BALLOON = 0.5f;
+	float balloonDelay = 0.0f;
 	float timerBallons = 0.0f;
 
 	enum TextureName
@@ -58,6 +58,7 @@ private:
 	void addBalloon();
 
 	bool exit;
+	int numArrows = 0;
 
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
@@ -82,6 +83,8 @@ public:
 
 	// Comprueba si hay algún objeto colocado en ese rectángulo
 	bool checkCollision(const Rectangle& rect);
+
+	void loadLevel(const int numLevel);
 };
 
 inline Texture*

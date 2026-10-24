@@ -1,6 +1,9 @@
 #include "game.h"
 
+#include <sstream>
+#include <fstream>
 #include <string>
+#include <stdexcept>
 
 #include <SDL3_image/SDL_image.h>
 
@@ -31,35 +34,90 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 Game::Game()
 	: exit(false)
 {
-	// Carga SDL y crea la ventana con su renderizador
-	if (!SDL_Init(SDL_INIT_VIDEO))
-		throw "SDL_Init: "s + SDL_GetError();
+	textures.fill(nullptr);
+	window = nullptr;
+	renderer = nullptr;
+	playerBow = nullptr;
 
-	if (!SDL_CreateWindowAndRenderer(WINDOW_TITLE,
-		WINDOW_WIDTH, WINDOW_HEIGHT,
-		0, &window, &renderer))
-		throw "window or renderer: "s + SDL_GetError();
-
-	// Carga las texturas al inicio
 	try {
-		textures.fill(nullptr);
+		// Carga SDL
+		if (!SDL_Init(SDL_INIT_VIDEO))
+			throw "Error al inicializar SDL: "s + SDL_GetError();
+
+		// Crea la ventana y el renderizador
+		if (!SDL_CreateWindowAndRenderer(
+			WINDOW_TITLE,
+			WINDOW_WIDTH,
+			WINDOW_HEIGHT,
+			0,
+			&window,
+			&renderer))
+		{
+			throw "Error al crear la ventana o el renderer: "s
+				+ SDL_GetError();
+		}
+
+		// Carga las texturas al inicio
 		string imgRoot = IMAGE_ROOT;
 
 		for (size_t i = 0; i < textures.size(); i++) {
 			auto [name, nrows, ncols] = textureList[i];
-			textures[i] = new Texture(renderer, (imgRoot + name).c_str(), nrows, ncols);
+
+			try {
+				textures[i] = new Texture(
+					renderer,
+					(imgRoot + name).c_str(),
+					nrows,
+					ncols
+				);
+			}
+			catch (const string& error) {
+				throw "Error al cargar la imagen "s + name + ": " + error;
+			}
 		}
+
+		// Configura que se pueden utilizar capas translúcidas
+		// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		// Carga la configuración del nivel
+		loadLevel(2);
+
+		// Crea el arco del jugador
+		playerBow = new Bow(
+			getTexture(BOW),
+			{ WINDOW_WIDTH / 10, WINDOW_HEIGHT / 2 },
+			{ 0.0f, 0.0f },
+			10,
+			this
+		);
 	}
 	catch (...) {
-		// TODO: liberar la memoria reservada
-		throw; // relanza la excepción
+		// Libera las texturas que se hayan creado
+		for (Texture*& texture : textures) {
+			delete texture;
+			texture = nullptr;
+		}
+
+		// Libera los objetos creados
+		delete playerBow;
+		playerBow = nullptr;
+
+		// Libera los recursos de SDL
+		if (renderer != nullptr) {
+			SDL_DestroyRenderer(renderer);
+			renderer = nullptr;
+		}
+
+		if (window != nullptr) {
+			SDL_DestroyWindow(window);
+			window = nullptr;
+		}
+
+		SDL_Quit();
+
+		// Propaga la excepción original hasta main()
+		throw;
 	}
-
-	// Configura que se pueden utilizar capas translúcidas
-	// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-	// TODO: crear los objetos del juego
-	playerBow = new Bow(getTexture(BOW), { WINDOW_WIDTH/10, WINDOW_HEIGHT/2 }, { 0.0f, 0.0f }, 10, this);
 }
 
 //texturas, renderizador y ventana y cierre
@@ -132,7 +190,7 @@ Game::update(float delta)
 
 	timerBallons += delta;
 
-	if (timerBallons >= DELAY_BALLOON) {
+	if (timerBallons >= (balloonDelay/1000)) {
 		addBalloon();
 		timerBallons =0;
 	}
@@ -195,7 +253,7 @@ Game::addBalloon()
 	const Vector2D<float> velocity{ 0.0f, -speed };
 
 	// Elegir un color aleatorio
-	std::uniform_int_distribution<int> colorDist(0, NUM_BALLONS);
+	std::uniform_int_distribution<int> colorDist(0, NUM_FRAMES_BALLONS);
 	const int color = colorDist(randomGenerator);
 
 	balloons.push_back(
@@ -220,4 +278,94 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 	 }
 
 	 return false;
+ }
+
+ void Game::loadLevel(const int numLevel)
+ {
+	 std::string levelPath =
+		 std::string(LEVEL_ROOT) + std::to_string(numLevel) + ".txt";
+
+	 std::ifstream file(levelPath);
+
+	 // Comprobar que se ha podido abrir el fichero
+	 if (!file.is_open()) {
+		 throw "No se pudo abrir el mapa: "s + levelPath;
+	 }
+
+	 std::string line;
+	 size_t lineno = 0;
+
+	 while (std::getline(file, line)) {
+		 lineno++;
+
+		 std::istringstream iss(line);
+		 std::string keyword;
+
+		 // Leer la palabra clave
+		 iss >> keyword;
+
+		 // Ignorar líneas vacías y comentarios
+		 if (keyword.empty() || keyword[0] == '#') {
+			 continue;
+		 }
+
+		 if (keyword == "arrows") {
+			 // Comprobar que existe un valor entero
+			 if (!(iss >> numArrows)) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": arrows necesita un numero entero.";
+			 }
+
+			 // Comprobar que el numero no es negativo
+			 if (numArrows < 0) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": arrows no puede ser negativo.";
+			 }
+
+			 // Comprobar que no hay datos adicionales
+			 std::string extra;
+			 if (iss >> extra) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": sobran datos despues de arrows.";
+			 }
+		 }
+		 else if (keyword == "baldelay") {
+			 // Comprobar que existe un valor numerico
+			 if (!(iss >> balloonDelay)) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": baldelay necesita un numero.";
+			 }
+
+			 // Comprobar que el tiempo es positivo
+			 if (balloonDelay <= 0) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": baldelay debe ser positivo.";
+			 }
+
+			 // Comprobar que no hay datos adicionales
+			 std::string extra;
+			 if (iss >> extra) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": sobran datos despues de baldelay.";
+			 }
+		 }
+		 else {
+			 // Ignorar el resto de la linea desconocida
+			 iss.ignore(
+				 std::numeric_limits<std::streamsize>::max(),
+				 '\n'
+			 );
+		 }
+	 }
+
+	 // Comprobar si ha ocurrido un error de lectura
+	 if (file.bad()) {
+		 throw "Error al leer el fichero de configuracion: "s + levelPath;
+	 }
  }

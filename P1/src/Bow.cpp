@@ -66,7 +66,6 @@ void Bow::handleEvent(const SDL_Event& event)
             float wArrow = (float(game->getTexture(Game::ARROW)->getFrameWidth()) * Game::GAME_SCALE);
             int hArrow = (float(game->getTexture(Game::ARROW)->getFrameHeight()) * Game::GAME_SCALE)/2;
 
-            std::cout << wArrow << " " << hArrow << std::endl;
             const float x = rect->getTopLeftCorner().getX();
 
             const float y = (rect->getTopLeftCorner().getY() + (rect->getHeight()) / 2.0f) - 6.0f;
@@ -103,4 +102,3 @@ void Bow::handleEvent(const SDL_Event& event)
         }
     }
 }
-
