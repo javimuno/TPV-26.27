@@ -148,7 +148,7 @@ Game::render() const
 {
 	SDL_RenderClear(renderer);
 
-	// TODO
+	
 	for (Balloon* balloon : balloons) {
 		balloon->render();
 	}
@@ -165,7 +165,7 @@ Game::render() const
 void
 Game::update(float delta)
 {
-	// TODO
+	
 	updateBalloons(delta);
 	updateArrows(delta);
 
@@ -215,8 +215,7 @@ Game::handleEvents()
 		if (event.type == SDL_EVENT_QUIT)
 			exit = true;
 
-		// TODO
-
+		
 		mainBow->handleEvent(event);
 	}
 }
@@ -257,7 +256,7 @@ void Game::updateBalloons(float delta)
 
 	int i = 0;
 
-	while (i < balloons.size()) //globos
+	while (i < balloons.size()) 
 	{
 		if (!balloons[i]->update(delta)) {
 			delete balloons[i];
