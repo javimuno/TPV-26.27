@@ -1,2 +1,6 @@
 Javier Munoz Garcia
-Primer testeo de entrega
+
+Opcionales: ninguno implementado
+
+Cosas que no funcionan correctamente: creo que todo funciona correctamente, y no me aparecen memory leaks
+por ningún lado ni en debug ni en sanitize así que creo que todo va bien.

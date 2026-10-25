@@ -11,15 +11,13 @@ void Balloon::render() const
 	textBalloon->renderFrame(rect.to_sdl(), color, col);
 }
 
-//ture lo mantiene, false lo elimina
+// Devuelve false al salir de pantalla o terminar la animacion de explosion.
 bool Balloon::update(float delta)
 {
 	Vector2D v1 = vel * delta;
 	rect.move(v1);
 
-	//acumulador animacion
-	
-
+	// Acumula tiempo para mantener cada imagen de la explosion antes de avanzar.
 	if (beenHit){
 		acT += delta;
 		if (acT > EXPLOSION_FRAME_TIME) {
@@ -32,6 +30,7 @@ bool Balloon::update(float delta)
 	return((rect.getTopLeftCorner().getY() + rect.getHeight())>0);
 }
 
+// El primer impacto inicia la explosion; los siguientes no vuelven a puntuar.
 bool Balloon::hit(const Rectangle& obj)
 {
 	if (rect.hasIntersection(obj)&&beenHit==false) {

@@ -49,7 +49,7 @@ private:
 	std::array<Texture*, NUM_TEXTURES> textures;
 	std::mt19937_64 randomGenerator{ std::random_device{}() };
 
-	static constexpr int BALLOON_WIDTH = 64.0f;
+	static constexpr float BALLOON_WIDTH = 64.0f;
 	static constexpr int BALLOON_MIN_COLOR = 0;
 	static constexpr int BALLOON_MAX_COLOR = 6;
 	static constexpr float BALLOON_MIN_SPEED = 50.0f;

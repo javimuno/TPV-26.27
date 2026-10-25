@@ -1,15 +1,17 @@
 #include "Bow.h"
 #include "game.h"
 
-#include <iostream>
+#include <iostream>+
 
+
+// Reserva una flecha al cargar y crea el proyectil al disparar.
 void Bow::handleShooting(const SDL_Event& event)
 {
 
 	//localizacion del arco
 
 	float x = rect.getTopLeftCorner().getX() + rect.getWidth() - ARROW_OVERLAP;
-	float y = rect.getTopLeftCorner().getY() + (rect.getHeight() - ARROW_OVERLAP) / 2.0f;
+	float y = rect.getTopLeftCorner().getY() + (rect.getHeight() - ARROW_HEIGHT) / 2.0f;
 
 	//cargar flecha
 	if (event.type == SDL_EVENT_KEY_DOWN) {
@@ -71,8 +73,6 @@ bool Bow::update(float delta)
 void Bow::handleEvent(const SDL_Event& event)
 {
 
-	
-	
 	//subir
 	if (event.type == SDL_EVENT_KEY_DOWN) {
 		if (event.key.key == SDLK_UP) {
@@ -96,7 +96,7 @@ void Bow::handleEvent(const SDL_Event& event)
 			vel = Vector2D<>(0.0f, 0.0f);
 		}
 	}
-
+	//manejo del armado y lanzamiento de la flecha 
 	handleShooting(event);
 
 }

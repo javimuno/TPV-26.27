@@ -18,13 +18,12 @@ bool Arrow::update(float delta)
 	Vector2D<> v1 = vel * delta;
 	rect.move(v1);
 
-	//rectangulo punta
-
+	// La zona de impacto ocupa el extremo derecho del rectangulo de la flecha.
 	float tipX = rect.getTopLeftCorner().getX() + rect.getWidth() - TIP_SIZE;
 	float tipY = rect.getTopLeftCorner().getY();
 	Rectangle tip({ tipX,tipY }, TIP_SIZE, TIP_SIZE);
 
-	//colision
+	// colision
 	game->checkCollision(tip);
 
 	return rect.getTopLeftCorner().getX()<Game::WINDOW_WIDTH;

@@ -28,6 +28,8 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 	{"balloons.png",7,6},
 };
 
+// Lee las flechas iniciales y el intervalo entre globos.
+// Ignora el resto de opciones y lanza una excepcion si un valor no es valido.
 void Game::loadLevel()
 {
 	std::ifstream file(std::string (LEVEL_ROOT) + "1.txt");
@@ -63,6 +65,7 @@ void Game::loadLevel()
 			balloonInterval_file = baldelayAux / 1000.0f;
 		}
 
+		// Descarta el resto de la linea antes de leer la siguiente opcion.
 		file.ignore(1000, '\n');
 		file >> option;
 	}
@@ -165,6 +168,13 @@ Game::update(float delta)
 	// TODO
 	updateBalloons(delta);
 	updateArrows(delta);
+
+	balloonTimer += delta;
+
+	if (balloonTimer >= balloonInterval_file) {
+		addBalloon();
+		balloonTimer = 0.0f;
+	}
 	
 	mainBow->update(delta);
 
@@ -241,7 +251,7 @@ Game::addBalloon()
 	//creacion
 	balloons.push_back(new Balloon(Rectangle({x,WINDOW_HEIGHT }, BALLOON_WIDTH, BALLOON_WIDTH), Vector2D<>(0, -v), getTexture(BALLOON), c));
 }
-
+// Actualiza los globos y elimina los que han terminado su recorrido o explosion.
 void Game::updateBalloons(float delta)
 {
 
@@ -259,7 +269,7 @@ void Game::updateBalloons(float delta)
 		}
 	}
 }
-
+// Actualiza las flechas y elimina las que han salido de la ventana.
 void Game::updateArrows(float delta)
 {
 	int i = 0;
@@ -275,12 +285,7 @@ void Game::updateArrows(float delta)
 		}
 	}
 
-	balloonTimer += delta;
-
-	if (balloonTimer >= balloonInterval_file) {
-		addBalloon();
-		balloonTimer = 0.0f;
-	}
+	
 }
 
 void
@@ -289,6 +294,8 @@ Game::addArrow(const Rectangle& rect, const Vector2D<>& vel) {
 	arrows.push_back(new Arrow(rect, vel, getTexture(ARROW),this));
 }
 
+
+// Busca el primer globo alcanzado y suma puntos una sola vez por globo.
  bool
  Game::checkCollision(const Rectangle& rect)
  {
