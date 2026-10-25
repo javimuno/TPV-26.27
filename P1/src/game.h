@@ -29,12 +29,11 @@ public:
 	// Tamaño real de la ventana
 	static constexpr int WINDOW_WIDTH = 800;
 	static constexpr int WINDOW_HEIGHT = 600;
-	static constexpr int BALLOON_WIDTH = 64.0f;
+	
 
 	// Timer para el spawn de balloons y acumulador
 	//static constexpr float BALLOON_INTERVAL = 0.5f;
 	
-	void drawDebugRect(const Rectangle& rect) const;
 
 	enum TextureName
 	{
@@ -50,10 +49,20 @@ private:
 	std::array<Texture*, NUM_TEXTURES> textures;
 	std::mt19937_64 randomGenerator{ std::random_device{}() };
 
+	static constexpr int BALLOON_WIDTH = 64.0f;
+	static constexpr int BALLOON_MIN_COLOR = 0;
+	static constexpr int BALLOON_MAX_COLOR = 6;
+	static constexpr float BALLOON_MIN_SPEED = 50.0f;
+	static constexpr float BALLOON_MAX_SPEED = 80.0f;
+	static constexpr float BALLOON_AREA_START = 1.0f / 3.0f;
+	static constexpr int BALLOON_POINTS = 10;
+
 	void render() const;
 	void update(float delta);
 	void handleEvents();
 	void addBalloon();
+	void updateBalloons(float delta);
+	void updateArrows(float delta);
 
 	bool exit;
 

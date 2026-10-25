@@ -42,7 +42,7 @@ void Game::loadLevel()
 
 	while (!file.fail())
 	{
-		std::cout << "opcion leida: " << option << std::endl;
+		
 		
 
 		if (option == "arrows") {
@@ -110,7 +110,7 @@ Game::Game()
 	// TODO: crear los objetos del juego
 
 	//arco
-	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW), 0,iniArrows_file, false,this);
+	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW),iniArrows_file, false,this);
 
 	
 
@@ -162,46 +162,13 @@ Game::render() const
 void
 Game::update(float delta)
 {
-
-	
 	// TODO
-
-	int i = 0;
-
-	while (i<balloons.size())
-	{
-		if (!balloons[i]->update(delta)) {
-			delete balloons[i];
-			balloons.erase(balloons.begin() + i);
-		}
-		else
-		{
-			i++;
-		}
-	}
-	i = 0;
-	while (i<arrows.size())
-	{
-		if (!arrows[i]->update(delta)) {
-			delete arrows[i];
-			arrows.erase(arrows.begin() + i);
-		}
-		else
-		{
-			i++;
-		}
-	}
-
-	balloonTimer += delta;
-
-	if (balloonTimer >= balloonInterval_file) {
-		addBalloon();
-		balloonTimer=0.0f;
-	}
+	updateBalloons(delta);
+	updateArrows(delta);
+	
 	mainBow->update(delta);
 
 	//Fin de partida
-
 	if (!mainBow->hasArrows() && arrows.empty()) {
 		std::cout << "Fin de partida" << std::endl;
 		exit = true;
@@ -250,14 +217,14 @@ Game::addBalloon()
 
 	//colores
 
-	int minC = 0;
-	int maxC = 6;
+	int minC = BALLOON_MIN_COLOR;
+	int maxC = BALLOON_MAX_COLOR;
 
 	std::uniform_int_distribution<int> cDistribution(minC, maxC);
 	int c = cDistribution(randomGenerator);
 
 	//franja del rango de espacio aleatorio
-	float minX = WINDOW_WIDTH / 3.0f;
+	float minX = WINDOW_WIDTH * BALLOON_AREA_START;
 	float maxX = WINDOW_WIDTH - BALLOON_WIDTH;
 
 	std::uniform_real_distribution<float> xDistribution(minX, maxX);
@@ -265,14 +232,55 @@ Game::addBalloon()
 
 	//velocidades aleatorias
 
-	float minV = 50.0f;
-	float maxV = 80.0f;
+	float minV = BALLOON_MIN_SPEED;
+	float maxV = BALLOON_MAX_SPEED;
 
 	std::uniform_real_distribution<float> vDistribution(minV, maxV);
 	float v = vDistribution(randomGenerator);
 
 	//creacion
 	balloons.push_back(new Balloon(Rectangle({x,WINDOW_HEIGHT }, BALLOON_WIDTH, BALLOON_WIDTH), Vector2D<>(0, -v), getTexture(BALLOON), c));
+}
+
+void Game::updateBalloons(float delta)
+{
+
+	int i = 0;
+
+	while (i < balloons.size()) //globos
+	{
+		if (!balloons[i]->update(delta)) {
+			delete balloons[i];
+			balloons.erase(balloons.begin() + i);
+		}
+		else
+		{
+			i++;
+		}
+	}
+}
+
+void Game::updateArrows(float delta)
+{
+	int i = 0;
+	while (i < arrows.size()) //flechas
+	{
+		if (!arrows[i]->update(delta)) {
+			delete arrows[i];
+			arrows.erase(arrows.begin() + i);
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+	balloonTimer += delta;
+
+	if (balloonTimer >= balloonInterval_file) {
+		addBalloon();
+		balloonTimer = 0.0f;
+	}
 }
 
 void
@@ -286,7 +294,7 @@ Game::addArrow(const Rectangle& rect, const Vector2D<>& vel) {
  {
 	 for (Balloon* balloon : balloons) {
 		 if (balloon->hit(rect)) {
-			 score += 10;
+			 score += BALLOON_POINTS;
 			 std::cout << "Puntuacion: " << score << "\n";
 			 return true;
 		}
@@ -294,15 +302,3 @@ Game::addArrow(const Rectangle& rect, const Vector2D<>& vel) {
 	 return false;
  }
 
- void Game::drawDebugRect(const Rectangle& rect) const
- {
-	 SDL_FRect sdlRect = rect.to_sdl();
-
-	 Uint8 r, g, b, a;
-	 SDL_GetRenderDrawColor(renderer, &r, &g, &b, &a);
-
-	 SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	 SDL_RenderRect(renderer, &sdlRect);
-
-	 SDL_SetRenderDrawColor(renderer, r, g, b, a);
- }

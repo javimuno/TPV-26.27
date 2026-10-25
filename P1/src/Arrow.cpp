@@ -8,14 +8,7 @@ Arrow::Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow, G
 
 void Arrow::render() const
 {
-	textArrow->renderFrame(rect.to_sdl(), 0, 0);
-
-	//rectangulo punta
-
-	float tipX = rect.getTopLeftCorner().getX() + rect.getWidth() - dimTip;
-	float tipY = rect.getTopLeftCorner().getY();
-	Rectangle tip({ tipX,tipY }, dimTip, dimTip);
-	game->drawDebugRect(tip);
+	textArrow->renderFrame(rect.to_sdl(), 0, 0);	
 }
 
 bool Arrow::update(float delta)

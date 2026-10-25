@@ -18,7 +18,7 @@ bool Balloon::update(float delta)
 	rect.move(v1);
 
 	//acumulador animacion
-	acT += tExp;
+	
 
 	if (beenHit){
 		acT += delta;

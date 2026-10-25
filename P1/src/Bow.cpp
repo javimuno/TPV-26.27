@@ -3,8 +3,35 @@
 
 #include <iostream>
 
-Bow::Bow(const Rectangle& rect, const Vector2D<>& vel, Texture* textBow, int picture, const int numArrows, const bool armed, Game* game) : rect(rect),
-vel(vel),textBow(textBow),col(picture), numArrows(numArrows), armed(armed), game(game)
+void Bow::handleShooting(const SDL_Event& event)
+{
+
+	//localizacion del arco
+
+	float x = rect.getTopLeftCorner().getX() + rect.getWidth() - ARROW_OVERLAP;
+	float y = rect.getTopLeftCorner().getY() + (rect.getHeight() - ARROW_OVERLAP) / 2.0f;
+
+	//cargar flecha
+	if (event.type == SDL_EVENT_KEY_DOWN) {
+		if (event.key.key == SDLK_LEFT && !armed && numArrows > 0) {
+			armed = true;
+			numArrows--;
+
+		}
+	}
+
+	//soltar flecha
+	if (event.type == SDL_EVENT_KEY_DOWN) {
+		if (event.key.key == SDLK_RIGHT && armed) {
+			game->addArrow(Rectangle({ x,y }, ARROW_WIDTH, ARROW_HEIGHT), Vector2D<>(ARROW_SPEED, 0));
+			armed = false;
+			std::cout << "Flechas restantes: " << numArrows << std::endl;
+		}
+	}
+}
+
+Bow::Bow(const Rectangle& rect, const Vector2D<>& vel, Texture* textBow, const int numArrows, const bool armed, Game* game) : rect(rect),
+vel(vel),textBow(textBow), numArrows(numArrows), armed(armed), game(game)
 {
 	std::cout << "Flechas restantes: " << numArrows << std::endl;
 }
@@ -44,15 +71,12 @@ bool Bow::update(float delta)
 void Bow::handleEvent(const SDL_Event& event)
 {
 
-	//localizacion del arco
-
-	float x = rect.getTopLeftCorner().getX() + rect.getWidth()-20.0f;
-	float y = rect.getTopLeftCorner().getY() + (rect.getHeight()-20.0f)/2;
+	
 	
 	//subir
 	if (event.type == SDL_EVENT_KEY_DOWN) {
 		if (event.key.key == SDLK_UP) {
-			vel = Vector2D<>(0.0f, -100.0f);
+			vel = Vector2D<>(0.0f, -MOVE_SPEED);
 		}
 	}
 	else if (event.type == SDL_EVENT_KEY_UP) {
@@ -64,7 +88,7 @@ void Bow::handleEvent(const SDL_Event& event)
 	//bajar
 	if (event.type == SDL_EVENT_KEY_DOWN) {
 		if (event.key.key == SDLK_DOWN) {
-			vel = Vector2D<>(0.0f, 100.0f);
+			vel = Vector2D<>(0.0f, MOVE_SPEED);
 		}
 	}
 	else if (event.type == SDL_EVENT_KEY_UP) {
@@ -73,25 +97,7 @@ void Bow::handleEvent(const SDL_Event& event)
 		}
 	}
 
-	//cargar flecha
-
-	if (event.type == SDL_EVENT_KEY_DOWN) {
-		if (event.key.key == SDLK_LEFT && !armed && numArrows > 0) {
-			armed = true;
-			numArrows--;
-			
-		}
-	}
-
-	//soltar flecha
-
-	if (event.type == SDL_EVENT_KEY_DOWN) {
-		if (event.key.key == SDLK_RIGHT && armed) {
-			game->addArrow(Rectangle({ x,y}, 80.0f, 20.0f), Vector2D<>(250, 0));
-			armed = false;
-			std::cout << "Flechas restantes: " << numArrows << std::endl;
-		}
-	}
+	handleShooting(event);
 
 }
 
