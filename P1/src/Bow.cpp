@@ -72,6 +72,8 @@ void Bow::handleEvent(const SDL_Event& event)
 
             game->addArrow({ x, y }, { 190.0f, 0.0f });
 
+            game->updateNumArrows(numArrows);
+
             isLoaded = false;
 
             std::cout << "Arrows: " << numArrows << std::endl;

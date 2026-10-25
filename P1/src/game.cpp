@@ -81,13 +81,13 @@ Game::Game()
 
 		// Carga la configuración del nivel
 		loadLevel(1);
-
+		infoBar = new InfoBar(renderer);
 		// Crea el arco del jugador
 		playerBow = new Bow(
 			getTexture(BOW),
 			{ WINDOW_WIDTH / 10, WINDOW_HEIGHT / 2 },
 			{ 0.0f, 0.0f },
-			10,
+			numArrows,
 			this
 		);
 	}
@@ -133,6 +133,9 @@ Game::~Game()
 	
 	delete playerBow;
 
+	delete infoBar;
+	infoBar = nullptr;
+
 	for (Texture* texture : textures) {
 		delete texture;
 	}
@@ -155,6 +158,8 @@ Game::render() const
 		arrow->render();
 	}
 	playerBow->render();
+
+	infoBar->render(numArrows);
 
 	SDL_RenderPresent(renderer);
 
@@ -394,4 +399,9 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 	 if (file.bad()) {
 		 throw "Error al leer el fichero de configuracion: "s + levelPath;
 	 }
+ }
+
+ void Game::updateNumArrows(int newNumArrows)
+ {
+	 numArrows = newNumArrows;
  }

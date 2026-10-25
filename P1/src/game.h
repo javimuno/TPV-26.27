@@ -10,6 +10,7 @@
 #include "Balloon.h"
 #include "Bow.h"
 #include "Arrow.h"
+#include "InfoBar.h"
 
 // #include "rectangle.h"
 
@@ -70,6 +71,7 @@ private:
 	std::vector<Arrow*> arrows;
 	Bow* playerBow;
 
+	InfoBar* infoBar = nullptr;
 public:
 	Game();
 	~Game();
@@ -89,6 +91,8 @@ public:
 	bool checkCollision(const Rectangle& rect);
 
 	void loadLevel(const int numLevel);
+
+	void updateNumArrows(int newNumArrows);
 };
 
 inline Texture*
