@@ -80,7 +80,7 @@ Game::Game()
 		// SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 		// Carga la configuración del nivel
-		loadLevel(2);
+		loadLevel(1);
 
 		// Crea el arco del jugador
 		playerBow = new Bow(
@@ -145,7 +145,7 @@ Game::~Game()
 void
 Game::render() const
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	SDL_SetRenderDrawColor(renderer, bgR, bgG, bgB, 255);
 	SDL_RenderClear(renderer);
 
 	for (Balloon* balloon : balloons) {
@@ -310,21 +310,18 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 		 }
 
 		 if (keyword == "arrows") {
-			 // Comprobar que existe un valor entero
 			 if (!(iss >> numArrows)) {
 				 throw "Error de formato en "s + levelPath
 					 + ", linea " + std::to_string(lineno)
 					 + ": arrows necesita un numero entero.";
 			 }
 
-			 // Comprobar que el numero no es negativo
 			 if (numArrows < 0) {
 				 throw "Error de formato en "s + levelPath
 					 + ", linea " + std::to_string(lineno)
 					 + ": arrows no puede ser negativo.";
 			 }
 
-			 // Comprobar que no hay datos adicionales
 			 std::string extra;
 			 if (iss >> extra) {
 				 throw "Error de formato en "s + levelPath
@@ -333,18 +330,42 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 			 }
 		 }
 		 else if (keyword == "baldelay") {
-			 // Comprobar que existe un valor numerico
 			 if (!(iss >> balloonDelay)) {
 				 throw "Error de formato en "s + levelPath
 					 + ", linea " + std::to_string(lineno)
 					 + ": baldelay necesita un numero.";
 			 }
 
-			 // Comprobar que el tiempo es positivo
 			 if (balloonDelay <= 0) {
 				 throw "Error de formato en "s + levelPath
 					 + ", linea " + std::to_string(lineno)
 					 + ": baldelay debe ser positivo.";
+			 }
+
+			 std::string extra;
+			 if (iss >> extra) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": sobran datos despues de baldelay.";
+			 }
+		 }
+		 else if (keyword == "bgcolor") {
+			 int r, g, b;
+
+			 // Comprobar que se han leido los tres componentes
+			 if (!(iss >> r >> g >> b)) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": bgcolor necesita tres valores RGB.";
+			 }
+
+			 // Comprobar que cada componente esta entre 0 y 255
+			 if (r < 0 || r > 255 ||
+				 g < 0 || g > 255 ||
+				 b < 0 || b > 255) {
+				 throw "Error de formato en "s + levelPath
+					 + ", linea " + std::to_string(lineno)
+					 + ": los valores RGB deben estar entre 0 y 255.";
 			 }
 
 			 // Comprobar que no hay datos adicionales
@@ -352,8 +373,13 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 			 if (iss >> extra) {
 				 throw "Error de formato en "s + levelPath
 					 + ", linea " + std::to_string(lineno)
-					 + ": sobran datos despues de baldelay.";
+					 + ": sobran datos despues de bgcolor.";
 			 }
+
+			 // Guardar el color de fondo
+			 bgR = static_cast<Uint8>(r);
+			 bgG = static_cast<Uint8>(g);
+			 bgB = static_cast<Uint8>(b);
 		 }
 		 else {
 			 // Ignorar el resto de la linea desconocida

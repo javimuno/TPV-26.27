@@ -60,6 +60,10 @@ private:
 	bool exit;
 	int numArrows = 0;
 
+	Uint8 bgR = 0;
+	Uint8 bgG = 0;
+	Uint8 bgB = 0;
+
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
 	std::vector<Balloon*> balloons;
