@@ -22,12 +22,12 @@ bool Balloon::update(float delta)
 
 	if (beenHit){
 		acT += delta;
-		if (acT > tExp) {
+		if (acT > EXPLOSION_FRAME_TIME) {
 			acT = 0.0f;
 			col++;
 		}
 	}
-	if (col > 5)return false; //fin animacion = eliminar
+	if (col > LAST_EXPLOSION_FRAME)return false; //fin animacion = eliminar
 
 	return((rect.getTopLeftCorner().getY() + rect.getHeight())>0);
 }

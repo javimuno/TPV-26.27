@@ -15,7 +15,8 @@ private:
 	bool beenHit=false;
 	int col=0;
 	float acT = 0.0f;
-	const float tExp=0.1f;
+	static constexpr float EXPLOSION_FRAME_TIME = 0.1f;
+	static constexpr int LAST_EXPLOSION_FRAME = 5;
 
 
 

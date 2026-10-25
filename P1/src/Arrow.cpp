@@ -20,9 +20,9 @@ bool Arrow::update(float delta)
 
 	//rectangulo punta
 
-	float tipX = rect.getTopLeftCorner().getX() + rect.getWidth() - dimTip;
+	float tipX = rect.getTopLeftCorner().getX() + rect.getWidth() - TIP_SIZE;
 	float tipY = rect.getTopLeftCorner().getY();
-	Rectangle tip({ tipX,tipY }, dimTip, dimTip);
+	Rectangle tip({ tipX,tipY }, TIP_SIZE, TIP_SIZE);
 
 	//colision
 	game->checkCollision(tip);

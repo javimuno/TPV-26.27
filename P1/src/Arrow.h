@@ -14,8 +14,7 @@ private:
 	Vector2D<> vel;
 	Texture* textArrow;
 	Game* game;
-	int dimTip=20;
-	
+	static constexpr float TIP_SIZE = 20.0f;
 
 public:
 
