@@ -40,7 +40,7 @@ bool Balloon::hit(const Rectangle& obj)
 	if (rect.hasIntersection(obj)&&beenHit==false) {
 		beenHit = true;
 		col = 1;
-		std::cout << "globo golpeado" << std::endl;
+		//std::cout << "globo golpeado" << std::endl;
 		return true;
 	}
 	
