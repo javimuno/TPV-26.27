@@ -14,8 +14,7 @@ void Balloon::render() const
 // Devuelve false al salir de pantalla o terminar la animacion de explosion.
 bool Balloon::update(float delta)
 {
-	Vector2D v1 = vel * delta;
-	rect.move(v1);
+	
 
 	// Acumula tiempo para mantener cada imagen de la explosion antes de avanzar.
 	if (beenHit){
@@ -24,6 +23,11 @@ bool Balloon::update(float delta)
 			acT = 0.0f;
 			col++;
 		}
+	}
+	else
+	{
+		Vector2D v1 = vel * delta;
+		rect.move(v1);
 	}
 	if (col > LAST_EXPLOSION_FRAME)return false; //fin animacion = eliminar
 

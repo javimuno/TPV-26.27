@@ -1,7 +1,7 @@
 #include "Bow.h"
 #include "game.h"
 
-#include <iostream>+
+#include <iostream>
 
 
 // Reserva una flecha al cargar y crea el proyectil al disparar.
