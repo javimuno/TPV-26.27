@@ -99,7 +99,7 @@ public:
 	void run();
 
 	// Comprueba si hay algún objeto colocado en ese rectángulo
-	 bool checkCollision(const Rectangle& rect);
+	 int checkCollision(const Rectangle& rect);
 	 void arrowCreated();
 	 void arrowDestroyed();
 	 void addObject(SceneObject* object);

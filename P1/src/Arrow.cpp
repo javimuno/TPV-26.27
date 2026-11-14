@@ -2,7 +2,7 @@
 #include "game.h"
 #include "texture.h"
 
-Arrow::Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow, Game* game) : MobileObject(game,rect,vel,textArrow)
+Arrow::Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow, Game* game) : MobileObject(game,rect,vel,textArrow), balloonsHit(0)
 {
 	getGame()->arrowCreated();
 }
@@ -27,8 +27,17 @@ bool Arrow::update(float delta)
 	float tipY = getRect().getTopLeftCorner().getY();
 	Rectangle tip({ tipX,tipY }, TIP_SIZE, TIP_SIZE);
 
-	// colision
-	getGame()->checkCollision(tip);
+	// colision y BONUS
+	const int pointsFromHit= getGame()->checkCollision(tip);
+
+	if (pointsFromHit > 0) {
+		const int bonus = BONUS_POINTS * balloonsHit;
+
+		if (bonus > 0) {
+			getGame()->changeScore(bonus);
+		}
+		++balloonsHit;
+	}
 
 	return getRect().getTopLeftCorner().getX()<Game::WINDOW_WIDTH;
 }

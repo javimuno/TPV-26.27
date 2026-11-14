@@ -13,6 +13,8 @@ class Arrow : public MobileObject
 private:
 
 	static constexpr float TIP_SIZE = 20.0f;
+	static constexpr int BONUS_POINTS = 3;
+	int balloonsHit;
 
 public:
 

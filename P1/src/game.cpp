@@ -273,14 +273,16 @@ void Game::updateObjects(float delta)
 }
 
 // Busca el primer globo alcanzado y suma puntos una sola vez por globo.
- bool  Game::checkCollision(const Rectangle& rect)
+ int  Game::checkCollision(const Rectangle& rect)
  {
+	 const int scoreBeforeHit = score;
+
 	 for (SceneObject* object : objects) {
 		 if (object->hit(rect)) {			
-			 return true;
+			 return score-scoreBeforeHit;
 		}
 	}
-	 return false;
+	 return 0;
  }
 
  void Game::arrowCreated()
