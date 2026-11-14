@@ -67,6 +67,14 @@ void Game::loadLevel()
 			balloonInterval_file = baldelayAux / 1000.0f;
 		}
 
+		else if (option == "butterflies") {
+			file >> initialButterflies;
+
+			if (file.fail() || initialButterflies < 0) {
+				throw std::string("Valor de butterflies no valido");
+			}
+		}
+
 		// Descarta el resto de la linea antes de leer la siguiente opcion.
 		file.ignore(1000, '\n');
 		file >> option;
@@ -74,7 +82,7 @@ void Game::loadLevel()
 }
 
 Game::Game()
-	: exit(false),arrowsInFlight(0)
+	: exit(false),arrowsInFlight(0),initialButterflies(0)
 {
 	//carga del nivel
 	loadLevel();
@@ -118,8 +126,9 @@ Game::Game()
 	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW),iniArrows_file, false,this);
 	
 	addObject(mainBow);
-	addButterfly();
-	
+	for (int i = 0; i < initialButterflies; i++) {
+		addButterfly();
+	}
 
 }
 
@@ -263,23 +272,11 @@ void Game::updateObjects(float delta)
 	}
 }
 
-void Game::addButterfly()
-{
-	const Rectangle rect({ WINDOW_WIDTH / 2.0f,WINDOW_HEIGHT / 2.0f }, 60.0f, 46.0f);
-	const Vector2D<> velocity(80.0f, 25.0f);
-
-	addObject(new Butterfly(this, rect, velocity, getTexture(BUTTERFLY)));
-
-}
-
-
 // Busca el primer globo alcanzado y suma puntos una sola vez por globo.
  bool  Game::checkCollision(const Rectangle& rect)
  {
 	 for (SceneObject* object : objects) {
-		 if (object->hit(rect)) {
-			 score += BALLOON_POINTS;
-			 std::cout << "Puntuacion: " << score << "\n";
+		 if (object->hit(rect)) {			
 			 return true;
 		}
 	}
@@ -299,6 +296,44 @@ void Game::addButterfly()
  void Game::addObject(SceneObject* object)
  {
 	 objects.push_back(object);
+ }
+
+
+ void Game::addButterfly() 
+ {
+
+	 const int BUTTERFLY_WIDTH = 60;
+	 const int BUTTERFLY_HEIGHT = 46;
+
+	 const float x = static_cast<float>(randomInt(0, WINDOW_WIDTH - BUTTERFLY_WIDTH));
+	 const float y = static_cast<float>(randomInt(0, WINDOW_WIDTH - BUTTERFLY_HEIGHT));
+	 float velX = static_cast<float>(randomInt(25, 80));
+	 float velY = static_cast<float>(randomInt(20, 50));
+
+	 if (randomInt(0, 1) == 1) {
+		 velX = -velX;
+	 }
+	 if (randomInt(0, 1) == 1) {
+		 velY = -velY;
+	 }
+
+	 const Rectangle rect({ x,y}, 60.0f, 46.0f);
+	 const Vector2D<> velocity(velX,velY);
+
+	 addObject(new Butterfly(this, rect, velocity, getTexture(BUTTERFLY)));
+
+ }
+
+ int Game::randomInt(int min, int max)
+ {
+	 std::uniform_int_distribution<int> distribution(min, max);
+	 return distribution(randomGenerator);
+ }
+
+ void Game::changeScore(int points)
+ {
+	 score += points;
+	 cout << "Puntos totales: " << score << endl;
  }
 
  

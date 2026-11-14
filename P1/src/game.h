@@ -57,7 +57,7 @@ private:
 	static constexpr float BALLOON_MIN_SPEED = 50.0f;
 	static constexpr float BALLOON_MAX_SPEED = 80.0f;
 	static constexpr float BALLOON_AREA_START = 1.0f / 3.0f;
-	static constexpr int BALLOON_POINTS = 10;
+	
 
 	void render() const;
 	void update(float delta);
@@ -83,6 +83,7 @@ private:
 	int iniArrows_file=10;
 	float balloonInterval_file=0.5f;
 	int arrowsInFlight;
+	int initialButterflies;
 
 
 	void loadLevel();
@@ -102,6 +103,8 @@ public:
 	 void arrowCreated();
 	 void arrowDestroyed();
 	 void addObject(SceneObject* object);
+	 int randomInt(int min, int max);
+	 void changeScore(int points);
 };
 
 inline Texture*

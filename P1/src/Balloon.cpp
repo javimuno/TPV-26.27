@@ -1,5 +1,6 @@
 #include "Balloon.h"
 #include "texture.h"
+#include "game.h"
 
 
 Balloon::Balloon(Game* game,const Rectangle& rect, const Vector2D<>& vel, Texture* textBalloon, int color) : MobileObject(game,rect,vel,textBalloon),color(color)
@@ -39,7 +40,7 @@ bool Balloon::hit(const Rectangle& obj)
 	if (getRect().hasIntersection(obj) && beenHit == false) {
 		beenHit = true;
 		col = 1;
-		//std::cout << "globo golpeado" << std::endl;
+		getGame()->changeScore(BALLOON_POINTS);
 		return true;
 	}
 	

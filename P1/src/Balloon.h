@@ -14,6 +14,7 @@ private:
 	float timeAccumulator = 0.0f;
 	static constexpr float EXPLOSION_FRAME_TIME = 0.1f;
 	static constexpr int LAST_EXPLOSION_FRAME = 5;
+	static constexpr int BALLOON_POINTS = 10;
 
 
 

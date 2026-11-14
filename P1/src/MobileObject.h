@@ -21,6 +21,14 @@ protected:
     {
         velocity = Vector2D<>(velocity.getX(), -velocity.getY());
     }
+    void setVelocity(const Vector2D<>& newVelocity) 
+    {
+        velocity = newVelocity;
+    }
+    bool movingLeft() const 
+    {
+        return velocity.getX() < 0.0f;
+    }
 
 public:
     bool update(float delta) override
