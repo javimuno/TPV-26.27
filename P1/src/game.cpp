@@ -72,7 +72,7 @@ void Game::loadLevel()
 }
 
 Game::Game()
-	: exit(false)
+	: exit(false),arrowsInFlight(0)
 {
 	//carga del nivel
 	loadLevel();
@@ -114,7 +114,8 @@ Game::Game()
 
 	//arco
 	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW),iniArrows_file, false,this);
-
+	
+	addObject(mainBow);
 	
 
 }
@@ -123,14 +124,9 @@ Game::Game()
 Game::~Game()
 {
 
-	for (SceneObject* balloon : balloons) {
-		delete balloon;
+	for (SceneObject* object : objects) {
+		delete object;
 	}
-	for (Arrow* arrow : arrows) {
-		delete arrow;
-	}
-	
-	delete mainBow;
 
 	for (Texture* texture : textures) {
 		delete texture;
@@ -148,14 +144,9 @@ Game::render() const
 {
 	SDL_RenderClear(renderer);
 
-	
-	for (SceneObject* balloon : balloons) {
-		balloon->render();
+	for (SceneObject* object : objects) {
+		object->render();
 	}
-	for (Arrow* arrow : arrows) {
-		arrow->render();
-	}
-	mainBow->render();
 
 	SDL_RenderPresent(renderer);
 
@@ -166,8 +157,7 @@ void
 Game::update(float delta)
 {
 	
-	updateBalloons(delta);
-	updateArrows(delta);
+	updateObjects(delta);
 
 	balloonTimer += delta;
 
@@ -179,13 +169,13 @@ Game::update(float delta)
 	mainBow->update(delta);
 
 	//Fin de partida
-	if (!mainBow->hasArrows() && arrows.empty()) {
+	if (!mainBow->hasArrows() && arrowsInFlight==0) {
 		std::cout << "Fin de partida" << std::endl;
 		exit = true;
 	}
 	
 }
- // pulsaciones, timeAccumulatorualizaciones, dibujo y espera ms antes de nueva vuelta
+ // pulsaciones, actualizaciones, dibujo y espera ms antes de nueva vuelta
 void
 Game::run()
 {
@@ -248,19 +238,20 @@ Game::addBalloon()
 	float v = vDistribution(randomGenerator);
 
 	//creacion
-	balloons.push_back(new Balloon(this,Rectangle({x,WINDOW_HEIGHT }, BALLOON_WIDTH, BALLOON_WIDTH), Vector2D<>(0, -v), getTexture(BALLOON), c));
+	addObject(new Balloon(this,Rectangle({x,WINDOW_HEIGHT }, BALLOON_WIDTH, BALLOON_WIDTH), Vector2D<>(0, -v), getTexture(BALLOON), c));
 }
-// timeAccumulatorualiza los globos y elimina los que han terminado su recorrido o explosion.
-void Game::updateBalloons(float delta)
+
+// actualiza los objectos de la escena y elimina los que han terminado su recorrido o explosion.
+void Game::updateObjects(float delta)
 {
 
-	auto it = balloons.begin();
+	auto it = objects.begin();
 
-	while (it!=balloons.end()) 
+	while (it!=objects.end()) 
 	{
 		if (!(*it)->update(delta)) {
 			delete *it;
-			it=balloons.erase(it);				
+			it=objects.erase(it);				
 		}
 		else
 		{
@@ -268,37 +259,13 @@ void Game::updateBalloons(float delta)
 		}
 	}
 }
-// timeAccumulatorualiza las flechas y elimina las que han salido de la ventana.
-void Game::updateArrows(float delta)
-{
-	int i = 0;
-	while (i < arrows.size()) //flechas
-	{
-		if (!arrows[i]->update(delta)) {
-			delete arrows[i];
-			arrows.erase(arrows.begin() + i);
-			cout << "flechadestruida";
-		}
-		else
-		{
-			i++;
-		}
-	}
-
-	
-}
-
-void Game::addArrow(const Rectangle& rect, const Vector2D<>& vel) {
-
-	arrows.push_back(new Arrow(rect, vel, getTexture(ARROW),this));
-}
 
 
 // Busca el primer globo alcanzado y suma puntos una sola vez por globo.
  bool  Game::checkCollision(const Rectangle& rect)
  {
-	 for (SceneObject* balloon : balloons) {
-		 if (balloon->hit(rect)) {
+	 for (SceneObject* object : objects) {
+		 if (object->hit(rect)) {
 			 score += BALLOON_POINTS;
 			 std::cout << "Puntuacion: " << score << "\n";
 			 return true;
@@ -307,3 +274,19 @@ void Game::addArrow(const Rectangle& rect, const Vector2D<>& vel) {
 	 return false;
  }
 
+ void Game::arrowCreated()
+ {
+	 ++arrowsInFlight;
+ }
+
+ void Game::arrowDestroyed()
+ {
+	 --arrowsInFlight;
+ }
+
+ void Game::addObject(SceneObject* object)
+ {
+	 objects.push_back(object);
+ }
+
+ 

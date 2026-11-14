@@ -23,9 +23,9 @@ class Texture;
 class Game
 {
 public:
-	// Número de timeAccumulatorualizaciones por segundo
+	// Número de actualizaciones por segundo
 	static constexpr int FRAME_RATE = 30;
-	// Periodo entre timeAccumulatorualizaciones en milisegundos
+	// Periodo entre actualizaciones en milisegundos
 	static constexpr int FRAME_PERIOD = 1000 / FRAME_RATE;
 	// Tamaño real de la ventana
 	static constexpr int WINDOW_WIDTH = 800;
@@ -62,8 +62,7 @@ private:
 	void update(float delta);
 	void handleEvents();
 	void addBalloon();
-	void updateBalloons(float delta);
-	void updateArrows(float delta);
+	void updateObjects(float delta);
 
 	bool exit;
 
@@ -72,14 +71,16 @@ private:
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
 
-	std::vector<SceneObject*> balloons;
+	
 	Bow* mainBow;
-	std::vector<Arrow*> arrows;
+	std::list<SceneObject*> objects;
+	
 
 	float balloonTimer = 0.0f;
 	int score=0;
 	int iniArrows_file=10;
 	float balloonInterval_file=0.5f;
+	int arrowsInFlight;
 
 
 	void loadLevel();
@@ -94,11 +95,11 @@ public:
 	// Ejecuta el bucle principal del juego
 	void run();
 
-	//cargar flecha
-	void addArrow(const Rectangle& rect, const Vector2D<>& vel);
-
 	// Comprueba si hay algún objeto colocado en ese rectángulo
 	 bool checkCollision(const Rectangle& rect);
+	 void arrowCreated();
+	 void arrowDestroyed();
+	 void addObject(SceneObject* object);
 };
 
 inline Texture*

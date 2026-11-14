@@ -17,11 +17,8 @@ private:
 public:
 
 	Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow,Game* game);
+	~Arrow()override;
 	void render() const override;
 	bool update(float delta) override;
-
-
-
-
 };
 

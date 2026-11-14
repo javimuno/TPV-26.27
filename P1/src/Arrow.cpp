@@ -4,7 +4,12 @@
 
 Arrow::Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow, Game* game) : MobileObject(game,rect,vel,textArrow)
 {
-	
+	getGame()->arrowCreated();
+}
+
+Arrow::~Arrow()
+{
+	getGame()->arrowDestroyed();
 }
 
 void Arrow::render() const
@@ -15,9 +20,9 @@ void Arrow::render() const
 bool Arrow::update(float delta)
 {
 	
-	MobileObject:update(delta);
+	MobileObject::update(delta);
 
-	// La zona de imptimeAccumulatoro ocupa el extremo derecho del rectangulo de la flecha.
+	// La zona de impacto ocupa el extremo derecho del rectangulo de la flecha.
 	float tipX = getRect().getTopLeftCorner().getX() + getRect().getWidth() - TIP_SIZE;
 	float tipY = getRect().getTopLeftCorner().getY();
 	Rectangle tip({ tipX,tipY }, TIP_SIZE, TIP_SIZE);

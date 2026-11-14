@@ -33,7 +33,7 @@ bool Balloon::update(float delta)
 	return((getRect().getTopLeftCorner().getY() + getRect().getHeight())>0);
 }
 
-// El primer imptimeAccumulatoro inicia la explosion; los siguientes no vuelven a puntuar.
+// El primer impacto inicia la explosion; los siguientes no vuelven a puntuar.
 bool Balloon::hit(const Rectangle& obj)
 {
 	if (getRect().hasIntersection(obj) && beenHit == false) {

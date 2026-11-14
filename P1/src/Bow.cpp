@@ -1,5 +1,6 @@
 #include "Bow.h"
 #include "game.h"
+#include "texture.h"
 
 #include <iostream>
 
@@ -7,11 +8,11 @@
 // Reserva una flecha al cargar y crea el proyectil al disparar.
 void Bow::handleShooting(const SDL_Event& event)
 {
-
+	Game* game = getGame();
 	//localizacion del arco
 
-	float x = rect.getTopLeftCorner().getX() + rect.getWidth() - ARROW_OVERLAP;
-	float y = rect.getTopLeftCorner().getY() + (rect.getHeight() - ARROW_HEIGHT) / 2.0f;
+	float x = getRect().getTopLeftCorner().getX() + getRect().getWidth() - ARROW_OVERLAP;
+	float y = getRect().getTopLeftCorner().getY() + (getRect().getHeight() - ARROW_HEIGHT) / 2.0f;
 
 	//cargar flecha
 	if (event.type == SDL_EVENT_KEY_DOWN) {
@@ -25,15 +26,17 @@ void Bow::handleShooting(const SDL_Event& event)
 	//soltar flecha
 	if (event.type == SDL_EVENT_KEY_DOWN) {
 		if (event.key.key == SDLK_RIGHT && armed) {
-			game->addArrow(Rectangle({ x,y }, ARROW_WIDTH, ARROW_HEIGHT), Vector2D<>(ARROW_SPEED, 0));
+			
+			game->addObject(new Arrow(Rectangle({ x,y }, ARROW_WIDTH, ARROW_HEIGHT), Vector2D<>(ARROW_SPEED, 0), game->getTexture(Game::ARROW), game));
+
 			armed = false;
 			std::cout << "Flechas restantes: " << numArrows << std::endl;
+
 		}
 	}
 }
 
-Bow::Bow(const Rectangle& rect, const Vector2D<>& vel, Texture* textBow, const int numArrows, const bool armed, Game* game) : rect(rect),
-vel(vel),textBow(textBow), numArrows(numArrows), armed(armed), game(game)
+Bow::Bow(const Rectangle& rect, const Vector2D<>& vel, Texture* textBow, const int numArrows, const bool armed, Game* game) :SceneObject(game,rect,textBow),vel(vel),numArrows(numArrows),armed(armed)
 {
 	std::cout << "Flechas restantes: " << numArrows << std::endl;
 }
@@ -47,24 +50,23 @@ void Bow::render() const
 	else {
 		column = 1;
 	}
-	textBow->renderFrame(rect.to_sdl(),0 , column);
+	getTexture()->renderFrame(getRect().to_sdl(), 0, column);
 
 }
 
 bool Bow::update(float delta)
 {
-	Vector2D<> v1 = vel * delta;
-	rect.move(v1);
+	move(vel * delta);
 
 	//limites de altura
-	float y = rect.getTopLeftCorner().getY();
-	float maxY = Game::WINDOW_HEIGHT - rect.getHeight();
+	float y = getRect().getTopLeftCorner().getY();
+	float maxY = Game::WINDOW_HEIGHT - getRect().getHeight();
 
 	if (y < 0) {
-		rect.move(Vector2D<>(0.0f, -y));
+		move(Vector2D<>(0.0f, -y));
 	}
 	else if (y > maxY) {
-		rect.move(Vector2D<>(0.0f, maxY-y));
+		move(Vector2D<>(0.0f, maxY-y));
 	}
 
 	return true;
