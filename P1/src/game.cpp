@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "texture.h"
+#include "Butterfly.h"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 	TextureSpec{"bow.png", 1, 2},
 	{"arrow.png"},
 	{"balloons.png",7,6},
+	{"butterfly.png",4,10},
 };
 
 // Lee las flechas iniciales y el intervalo entre globos.
@@ -116,6 +118,7 @@ Game::Game()
 	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW),iniArrows_file, false,this);
 	
 	addObject(mainBow);
+	addButterfly();
 	
 
 }
@@ -258,6 +261,15 @@ void Game::updateObjects(float delta)
 			++it;
 		}
 	}
+}
+
+void Game::addButterfly()
+{
+	const Rectangle rect({ WINDOW_WIDTH / 2.0f,WINDOW_HEIGHT / 2.0f }, 60.0f, 46.0f);
+	const Vector2D<> velocity(80.0f, 25.0f);
+
+	addObject(new Butterfly(this, rect, velocity, getTexture(BUTTERFLY)));
+
 }
 
 

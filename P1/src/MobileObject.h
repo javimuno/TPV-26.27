@@ -12,6 +12,16 @@ protected:
         const Vector2D<>& velocity, Texture* texture)
         : SceneObject(game, rect, texture), velocity(velocity) {}
 
+    void reverseHorizontalDirection()
+    {
+        velocity = Vector2D<>(-velocity.getX(), velocity.getY());
+    }
+
+    void reverseVerticalDirection()
+    {
+        velocity = Vector2D<>(velocity.getX(), -velocity.getY());
+    }
+
 public:
     bool update(float delta) override
     {        

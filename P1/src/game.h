@@ -41,6 +41,7 @@ public:
 		BOW = 0,
 		ARROW,
 		BALLOON,
+		BUTTERFLY,
 		NUM_TEXTURES
 	};
 
@@ -63,6 +64,7 @@ private:
 	void handleEvents();
 	void addBalloon();
 	void updateObjects(float delta);
+	void addButterfly();
 
 	bool exit;
 
