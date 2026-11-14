@@ -6,6 +6,7 @@
 #include <istream>
 #include <vector>
 #include <random>
+#include <list>
 
 #include "Balloon.h"
 #include "Bow.h"
@@ -22,9 +23,9 @@ class Texture;
 class Game
 {
 public:
-	// Número de actualizaciones por segundo
+	// Número de timeAccumulatorualizaciones por segundo
 	static constexpr int FRAME_RATE = 30;
-	// Periodo entre actualizaciones en milisegundos
+	// Periodo entre timeAccumulatorualizaciones en milisegundos
 	static constexpr int FRAME_PERIOD = 1000 / FRAME_RATE;
 	// Tamaño real de la ventana
 	static constexpr int WINDOW_WIDTH = 800;
@@ -71,7 +72,7 @@ private:
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
 
-	std::vector<Balloon*> balloons;
+	std::vector<SceneObject*> balloons;
 	Bow* mainBow;
 	std::vector<Arrow*> arrows;
 

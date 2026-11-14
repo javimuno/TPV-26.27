@@ -110,7 +110,10 @@
     <ClInclude Include="Balloon.h" />
     <ClInclude Include="Bow.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="MobileObject.h" />
     <ClInclude Include="rectangle.h" />
+    <ClInclude Include="SceneObject.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="vector2D.h" />
   </ItemGroup>

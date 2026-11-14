@@ -1,30 +1,29 @@
 #include "Arrow.h"
 #include "game.h"
+#include "texture.h"
 
-Arrow::Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow, Game* game) : rect(rect), vel(vel), textArrow(textArrow), game(game)
+Arrow::Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow, Game* game) : MobileObject(game,rect,vel,textArrow)
 {
 	
 }
 
 void Arrow::render() const
 {
-	textArrow->renderFrame(rect.to_sdl(), 0, 0);	
+	getTexture()->renderFrame(getRect().to_sdl(), 0, 0);
 }
 
 bool Arrow::update(float delta)
 {
 	
-	
-	Vector2D<> v1 = vel * delta;
-	rect.move(v1);
+	MobileObject:update(delta);
 
-	// La zona de impacto ocupa el extremo derecho del rectangulo de la flecha.
-	float tipX = rect.getTopLeftCorner().getX() + rect.getWidth() - TIP_SIZE;
-	float tipY = rect.getTopLeftCorner().getY();
+	// La zona de imptimeAccumulatoro ocupa el extremo derecho del rectangulo de la flecha.
+	float tipX = getRect().getTopLeftCorner().getX() + getRect().getWidth() - TIP_SIZE;
+	float tipY = getRect().getTopLeftCorner().getY();
 	Rectangle tip({ tipX,tipY }, TIP_SIZE, TIP_SIZE);
 
 	// colision
-	game->checkCollision(tip);
+	getGame()->checkCollision(tip);
 
-	return rect.getTopLeftCorner().getX()<Game::WINDOW_WIDTH;
+	return getRect().getTopLeftCorner().getX()<Game::WINDOW_WIDTH;
 }
