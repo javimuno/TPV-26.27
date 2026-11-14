@@ -8,15 +8,14 @@ class Game;
 class Arrow
 {
 private:
-
-	Rectangle* rect;
-	Vector2D<float> velocity;
-	Point2D<float> position;
 	Texture* texture;
-
-	//Rectangle tip;
+	Point2D<float> position;
+	Vector2D<float> velocity;
+	Rectangle* rect;
 	
 	Game* game;
+
+	//Rectangle tip;
 public:
 
 	Arrow(Texture* text, const Point2D<float>& pos, const Vector2D<float>& vel, Game* g);

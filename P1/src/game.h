@@ -36,9 +36,6 @@ public:
 
 	static constexpr int NUM_FRAMES_BALLONS = 6;
 
-	float balloonDelay = 0.0f;
-	float timerBallons = 0.0f;
-
 	enum TextureName
 	{
 		BOW = 0,
@@ -64,6 +61,9 @@ private:
 	Uint8 bgR = 0;
 	Uint8 bgG = 0;
 	Uint8 bgB = 0;
+
+	float balloonDelay = 0.0f;
+	float timerBallons = 0.0f;
 
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego

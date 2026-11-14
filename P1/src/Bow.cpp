@@ -5,7 +5,7 @@
 #include <iostream>
 
 Bow::Bow(Texture* text, const Point2D<float>& pos, const Vector2D<float>& vel, const int iniNumArrows, Game* game) : 
-	texture(text), position(pos), velocity(vel), numArrows(iniNumArrows), isLoaded(false), game(game)
+	texture(text), position(pos), velocity(vel), numArrows(iniNumArrows), game(game), isLoaded(false)
 {
 	int w = float(texture->getFrameWidth());
 	int h = float(texture->getFrameHeight());
@@ -63,10 +63,7 @@ void Bow::handleEvent(const SDL_Event& event)
     {
         if (isLoaded)
         {
-            float wArrow = (float(game->getTexture(Game::ARROW)->getFrameWidth()) * Game::GAME_SCALE);
-            int hArrow = (float(game->getTexture(Game::ARROW)->getFrameHeight()) * Game::GAME_SCALE)/2;
-
-            const float x = rect->getTopLeftCorner().getX();
+           const float x = rect->getTopLeftCorner().getX();
 
             const float y = (rect->getTopLeftCorner().getY() + (rect->getHeight()) / 2.0f) - 6.0f;
 

@@ -274,10 +274,11 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
  bool
  Game::checkCollision(const Rectangle& rect)
  {
-	 for (auto* balloon : balloons)
+	 for (Balloon* balloon : balloons)
 	 {
 		 if (balloon->hit(rect))
 		 {
+
 			 return true;
 		 }
 	 }
@@ -322,7 +323,7 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 			 }
 
 			 if (numArrows < 0) {
-				 throw "Error de formato en "s + levelPath
+					 throw "Error de formato en "s + levelPath
 					 + ", linea " + std::to_string(lineno)
 					 + ": arrows no puede ser negativo.";
 			 }
@@ -362,7 +363,7 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 				 throw "Error de formato en "s + levelPath
 					 + ", linea " + std::to_string(lineno)
 					 + ": bgcolor necesita tres valores RGB.";
-			 }
+			 }	
 
 			 // Comprobar que cada componente esta entre 0 y 255
 			 if (r < 0 || r > 255 ||

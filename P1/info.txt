@@ -1,0 +1,5 @@
+Aida Acha Muñoz
+
+Funcionalidades opcionales incluidas: 
+- InfoBar implementada.
+- Añade soporte para leer el color del fondo desde los niveles.

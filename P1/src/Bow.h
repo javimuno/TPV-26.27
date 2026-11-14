@@ -12,15 +12,16 @@ class Bow
 {
 private:
 
-	Rectangle* rect;
-	Vector2D<float> velocity;
-	Point2D<float> position;
 	Texture* texture;
+	Point2D<float> position;
+	Vector2D<float> velocity;
+	Game* game;
+
+	Rectangle* rect;
 	
 	bool isLoaded;
 	int numArrows;
 
-	Game* game;
 public:
 
 	Bow(Texture* text, const Point2D<float>& pos, const Vector2D<float>& vel, const int iniNumArrows, Game* game);

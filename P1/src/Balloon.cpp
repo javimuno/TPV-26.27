@@ -28,7 +28,7 @@ bool Balloon::update(float delta)
 			animationTimer -= 0.02f;
 			explosionFrame++;
 
-			if (explosionFrame > 6)
+			if (explosionFrame > Game::NUM_FRAMES_BALLONS)
 				return false;
 		}
 

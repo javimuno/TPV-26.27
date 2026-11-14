@@ -9,13 +9,13 @@ class Balloon
 {
 
 private:
-
-	Rectangle* rect;
-	Vector2D <float> velocity;
-	Point2D<float> position;
 	Texture* texture;
+	Point2D<float> position;
+	Vector2D <float> velocity;
 	int color;
 
+	Rectangle* rect;
+	
 	bool exploded = false;
 	float animationTimer = 0.0f;
 	int explosionFrame = 0;
