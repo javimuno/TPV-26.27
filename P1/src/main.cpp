@@ -6,6 +6,8 @@
 //
 #include <iostream>
 #include <string>
+#include "GameError.h"
+#include <SDL3/SDL_messagebox.h>
 
 #include "game.h"
 
@@ -15,9 +17,21 @@ int main(int argc, char* argv[])
 	{
 		Game().run();
 	}
-	catch (const std::string& error)
+	catch (const GameError& error)
 	{
-		std::cout << "Error: " << error << std::endl;
+		//así por consola
+		/*std::cout << "Error: " << error.what() << std::endl;
+		return 1;*/
+
+		//este bloque es con el simplemessage pero meh
+		std::cerr << "Error: " << error.what() << '\n';
+
+		SDL_ShowSimpleMessageBox(
+			SDL_MESSAGEBOX_ERROR,
+			"Error en el Juego",
+			error.what(),
+			nullptr
+		);
 		return 1;
 	}
 	

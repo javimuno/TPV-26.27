@@ -4,9 +4,11 @@
 #include <SDL3_image/SDL_image.h>
 #include <fstream>
 #include <filesystem>
+#include <sstream>
 
 #include "texture.h"
 #include "Butterfly.h"
+#include "GameError.h"
 
 using namespace std;
 
@@ -58,47 +60,57 @@ bool Game::loadLevel(int levelNumber)
 	balloonBaseSpeed = 65.0f;
 
 	std::string option;
+	std::string line;
+	int lineNumber = 0;
 	
 	file >> option;
 
-	while (!file.fail())
+
+	while (std::getline(file,line))
 	{
+		++lineNumber;
+		std::istringstream values{ line };
+
+		std::string option;
+		if (!(values >> option) || option[0] == '#') {
+			continue;
+		}
 		
 		
 
 		if (option == "arrows") {
-			file >> iniArrows_file;
+			values >> iniArrows_file;
 
-			if (file.fail()||iniArrows_file<0) {
-				throw std::string("Valor de arrows no valido");
+			if (values.fail()||iniArrows_file<0) {
+				throw FileFormatError(filename, lineNumber, "Valor de arrows no valido");
 			}
 		}
 
 		else if (option == "baldelay") {
 			int baldelayAux;
-			file >> baldelayAux;			
+			values >> baldelayAux;			
 
-			if (file.fail() || baldelayAux<=0) {
-				throw std::string("Valor de baldelay no valido");
+			if (values.fail() || baldelayAux<=0) {
+				throw FileFormatError(filename, lineNumber, "Valor de baldelay no valido");
 			}
 			balloonInterval_file = baldelayAux / 1000.0f;
 		}
 
 		else if (option == "butterflies") {
-			file >> initialButterflies;
+			values >> initialButterflies;
 
-			if (file.fail() || initialButterflies < 0) {
-				throw std::string("Valor de butterflies no valido");
+			if (values.fail() || initialButterflies < 0) {
+				throw FileFormatError(filename, lineNumber, "Valor de butterflies no valido");
 			}
 		}
 
 		else if (option == "bgcolor") {
 			int red, green, blue;
-			file >> red >> green >> blue;
+			values >> red >> green >> blue;
 
-			if (file.fail() || red < 0 || red>255 ||
+			if (values.fail() || red < 0 || red>255 ||
 				green < 0 || green > 255 || blue < 0 || blue > 255) {
-				throw std::string("Valor de bgColor no válido");
+				throw FileFormatError(filename, lineNumber, "Valor de bgColor no valido");
 			}
 
 			backgroundColor = {
@@ -111,27 +123,26 @@ bool Game::loadLevel(int levelNumber)
 
 		else if (option == "balspeed") {
 			float ballspeed;
-			file >> ballspeed;
+			values >> ballspeed;
 
-			if (file.fail() || ballspeed <= 0.0f) {
-				throw std::string("Valor ballSpeed no válido");
+			if (values.fail() || ballspeed <= 0.0f) {
+				throw FileFormatError(filename, lineNumber, "Valor ballSpeed no valido");
 			}
 
 			balloonBaseSpeed = ballspeed*1000; //porque viene en px/ms -.-
 		}
 
 		else if (option == "goal") {
-			file >> levelGoal;
+			values >> levelGoal;
 
-			if (file.fail() || levelGoal < 0) {
-				throw std::string("Valor de goal no válido");
+			if (values.fail() || levelGoal < 0) {
+				throw FileFormatError(filename, lineNumber, "Valor de goal no válido");
 			}
 			
 
 		}
 		// Descarta el resto de la linea antes de leer la siguiente opcion.
-		file.ignore(1000, '\n');
-		file >> option;
+		
 	}
 
 	return true;
