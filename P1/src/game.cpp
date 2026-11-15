@@ -51,8 +51,8 @@ bool Game::loadLevel(int levelNumber)
 
 	//reincio
 	levelGoal = 0; 
-	exit = false;
-	arrowsInFlight = 0;
+	exit = false;	
+	iniArrows_file = 0;
 	initialButterflies = 0;
 	backgroundColor = { 0,0,0,255 };
 	balloonBaseSpeed = 65.0f;
@@ -151,11 +151,7 @@ void Game::clearObjects()
 {
 	for (SceneObject* object : objects) {
 		delete object;
-	}
-
-	for (Texture* texture : textures) {
-		delete texture;
-	}
+	}	
 
 	objects.clear();
 	mainBow = nullptr;
@@ -212,6 +208,11 @@ Game::Game()
 Game::~Game()
 {
 	clearObjects();
+
+	//porque sino no hay texturas en el cambio de niveles
+	for (Texture* texture : textures) {
+		delete texture;
+	}
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
