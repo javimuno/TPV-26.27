@@ -48,15 +48,18 @@ public:
 private:
 	SDL_Window* window;
 	SDL_Renderer* renderer;
+	SDL_Color backgroundColor;
 	std::array<Texture*, NUM_TEXTURES> textures;
 	std::mt19937_64 randomGenerator{ std::random_device{}() };
 
 	static constexpr float BALLOON_WIDTH = 64.0f;
 	static constexpr int BALLOON_MIN_COLOR = 0;
 	static constexpr int BALLOON_MAX_COLOR = 6;
-	static constexpr float BALLOON_MIN_SPEED = 50.0f;
-	static constexpr float BALLOON_MAX_SPEED = 80.0f;
+	static constexpr float BALLOON_MIN_SPEED_RATIO = 0.8f; //80%
+	static constexpr float BALLOON_MAX_SPEED_RATIO = 1.2f; //120%
 	static constexpr float BALLOON_AREA_START = 1.0f / 3.0f;
+
+	int balloonBaseSpeed;
 	
 
 	void render() const;

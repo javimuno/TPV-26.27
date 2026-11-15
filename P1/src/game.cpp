@@ -34,6 +34,8 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 // Ignora el resto de opciones y lanza una excepcion si un valor no es valido.
 void Game::loadLevel()
 {
+
+
 	std::ifstream file(std::string (LEVEL_ROOT) + "1.txt");
 
 	if (!file.is_open()) {
@@ -75,6 +77,34 @@ void Game::loadLevel()
 			}
 		}
 
+		else if (option == "bgcolor") {
+			int red, green, blue;
+			file >> red >> green >> blue;
+
+			if (file.fail() || red < 0 || red>255 ||
+				green < 0 || green > 255 || blue < 0 || blue > 255) {
+				throw std::string("Valor de bgColor no válido");
+			}
+
+			backgroundColor = {
+				static_cast<Uint8>(red),
+				static_cast<Uint8>(green),
+				static_cast<Uint8>(blue),
+				255
+			};
+		}
+
+		else if (option == "balspeed") {
+			float ballspeed;
+			file >> ballspeed;
+
+			if (file.fail() || ballspeed <= 0.0f) {
+				throw std::string("Valor ballSpeed no válido");
+			}
+
+			balloonBaseSpeed = ballspeed*1000; //porque viene en px/ms -.-
+		}
+
 		// Descarta el resto de la linea antes de leer la siguiente opcion.
 		file.ignore(1000, '\n');
 		file >> option;
@@ -82,7 +112,7 @@ void Game::loadLevel()
 }
 
 Game::Game()
-	: exit(false),arrowsInFlight(0),initialButterflies(0)
+	: exit(false),arrowsInFlight(0),initialButterflies(0),backgroundColor{0,0,0,255},balloonBaseSpeed((65.0f))
 {
 	//carga del nivel
 	loadLevel();
@@ -154,6 +184,7 @@ Game::~Game()
 void
 Game::render() const
 {
+	SDL_SetRenderDrawColor(renderer,backgroundColor.r,backgroundColor.g,backgroundColor.b,backgroundColor.a);
 	SDL_RenderClear(renderer);
 
 	for (SceneObject* object : objects) {
@@ -243,11 +274,13 @@ Game::addBalloon()
 
 	//velocidades aleatorias
 
-	float minV = BALLOON_MIN_SPEED;
-	float maxV = BALLOON_MAX_SPEED;
+	const float minV = balloonBaseSpeed * BALLOON_MIN_SPEED_RATIO;
+	const float maxV = balloonBaseSpeed * BALLOON_MAX_SPEED_RATIO;
 
+
+	//esto con mi sistema de rango aleatorio
 	std::uniform_real_distribution<float> vDistribution(minV, maxV);
-	float v = vDistribution(randomGenerator);
+	float v = vDistribution(randomGenerator);	
 
 	//creacion
 	addObject(new Balloon(this,Rectangle({x,WINDOW_HEIGHT }, BALLOON_WIDTH, BALLOON_WIDTH), Vector2D<>(0, -v), getTexture(BALLOON), c));
