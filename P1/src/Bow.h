@@ -33,6 +33,7 @@ public:
 	bool update(float delta) override;
 	void handleEvent(const SDL_Event& event);
 	bool hasArrows() const;
+	void save(std::ostream& out) const override;
 
 
 };

@@ -22,5 +22,6 @@ public:
 	~Arrow()override;
 	void render() const override;
 	bool update(float delta) override;
+	void save(std::ostream& out) const override;
 };
 

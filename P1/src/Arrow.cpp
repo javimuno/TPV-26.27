@@ -41,3 +41,10 @@ bool Arrow::update(float delta)
 
 	return getRect().getTopLeftCorner().getX()<Game::WINDOW_WIDTH;
 }
+
+void Arrow::save(std::ostream& out) const  
+{
+	out << "arrow: ";
+	MobileObject::save(out);
+	out << ' ' << balloonsHit << '\n';
+}

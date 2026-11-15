@@ -25,4 +25,10 @@ protected:
 
 public:
     virtual bool hit(const Rectangle&) { return false; }
+    virtual void save(std::ostream& out) const {
+        out << rect.getTopLeftCorner().getX() << ' '
+            << rect.getTopLeftCorner().getY() << ' '
+            << rect.getWidth() << ' '
+            << rect.getHeight();
+    }
 };

@@ -90,6 +90,19 @@ bool Butterfly::hit(const Rectangle& tip)
 	
 }
 
+void Butterfly::save(std::ostream& out) const
+{
+	out << "butterfly: ";
+	MobileObject::save(out);
+	out << ' ' << falling << ' '
+		<< directionTimer << ' '
+		<< animationRow << ' '
+		<< col << ' '
+		<< flapTimer << ' '
+		<< animBack << '\n';
+
+}
+
 void Butterfly::updateAnimation(float delta)
 {
 	flapTimer += delta;

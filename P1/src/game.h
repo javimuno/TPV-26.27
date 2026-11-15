@@ -74,6 +74,7 @@ private:
 	bool loadLevel(int levelNumber);
 	void startLevel();
 	void clearObjects();
+	void saveGame() const;
 
 	bool exit;
 

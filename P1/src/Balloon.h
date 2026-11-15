@@ -24,5 +24,6 @@ public:
 	void render() const override;
 	bool update(float delta) override;
 	bool hit(const Rectangle& obj) override;
+	void save(std::ostream& out)const override;
 };
 

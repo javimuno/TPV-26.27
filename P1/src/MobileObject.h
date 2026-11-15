@@ -36,4 +36,10 @@ public:
         move(velocity * delta);
         return true;
     }
+
+    void save(std::ostream& out) const override
+    {
+        SceneObject::save(out);
+        out << ' ' << velocity.getX() << ' ' << velocity.getY();
+    }
 };

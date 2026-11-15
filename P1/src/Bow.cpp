@@ -108,3 +108,15 @@ bool Bow::hasArrows() const
 	return (numArrows > 0 || armed );
 	
 }
+
+void Bow::save(std::ostream& out) const
+{
+	out << "bow ";
+	SceneObject::save(out);
+
+	out << ' ' << vel.getX() << ' '
+		<< vel.getY() << ' '
+		<< numArrows << ' '
+		<< armed<<'\n';
+
+}

@@ -168,6 +168,28 @@ void Game::clearObjects()
 	mainBow = nullptr;
 }
 
+void Game::saveGame() const
+{
+	std::ofstream file{ "saved.txt" };//crea o reemplaza contenido si existe
+
+	if (!file) {
+		throw GameError("No se puede escribir en saved.txt");
+	}
+
+	file << currentLevel << ' ' << score << ' ' << balloonTimer << '\n';
+	
+	//todos los objetos guardan su estado
+	for (const SceneObject* object : objects) {
+		object->save(file);
+	}
+	file.close();
+
+	if (!file) {
+		throw GameError("No se ha podido hacer el guardado");
+	}
+
+}
+
 Game::Game()
 	: exit(false),arrowsInFlight(0),initialButterflies(0),backgroundColor{0,0,0,255},balloonBaseSpeed((65.0f))
 {
@@ -312,7 +334,15 @@ Game::handleEvents()
 		if (event.type == SDL_EVENT_QUIT)
 			exit = true;
 
-		
+		if (event.type == SDL_EVENT_KEY_DOWN) {
+			if ((event.key.mod & SDL_KMOD_CTRL) != 0 && event.key.key == SDLK_S ) {
+				if (!event.key.repeat) { //1 vez solo
+					saveGame();
+				}
+
+				continue;
+			}
+		}
 		mainBow->handleEvent(event);
 	}
 }
