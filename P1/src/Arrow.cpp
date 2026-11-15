@@ -27,7 +27,7 @@ bool Arrow::update(float delta)
 	float tipY = getRect().getTopLeftCorner().getY();
 	Rectangle tip({ tipX,tipY }, TIP_SIZE, TIP_SIZE);
 
-	// colision y BONUS
+	// colision y bonus-> cuenta los globos anteriores y luego suma el actual
 	const int pointsFromHit= getGame()->checkCollision(tip);
 
 	if (pointsFromHit > 0) {
@@ -49,18 +49,14 @@ void Arrow::save(std::ostream& out) const
 	out << ' ' << balloonsHit << '\n';
 }
 
-//reconstruccion de la flecha
-Arrow* Arrow::load(std::istream& in, Game* game)
+//reconstruccion de la flecha nuevo
+Arrow::Arrow(std::istream& in, Game* game)
+	: MobileObject(game, in, game->getTexture(Game::ARROW)),
+	balloonsHit(0)
 {
-	const Rectangle rect = readRectangle(in);
-	const Vector2D<>velocity = readVelocity(in);
-	int savedBallonsHit;
-
-	if (!(in >> savedBallonsHit) || savedBallonsHit < 0) {
+	if (!(in >> balloonsHit) || balloonsHit < 0) {
 		throw GameError("Contador de globos no valido");
 	}
 
-	Arrow* arrow = new Arrow(rect, velocity, game->getTexture(Game::ARROW), game);
-	arrow->balloonsHit = savedBallonsHit;
-	return arrow;
+	getGame()->arrowCreated();
 }

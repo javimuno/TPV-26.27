@@ -85,7 +85,7 @@ private:
 	// Elemento del juego
 	// TODO: añadir atributos para los objetos del juego
 
-	
+	//está en objects, es para acceder a los eventos y municion
 	Bow* mainBow;
 	std::list<SceneObject*> objects;
 	

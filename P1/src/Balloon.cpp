@@ -62,24 +62,10 @@ void Balloon::save(std::ostream& out) const
 }
 
 //reconstruccion de balloon
-Balloon* Balloon::load(std::istream& in, Game* game)
+Balloon::Balloon(std::istream& in, Game* game)
+	: MobileObject(game, in, game->getTexture(Game::BALLOON)), color(0)
 {
-	const Rectangle rect = readRectangle(in);
-	const Vector2D<> velocity = readVelocity(in);
-
-	int savedColor, savedCol;
-	bool savedBeenHit;
-	float savedTimeAccumulator;
-
-	if (!(in >> savedColor >> savedBeenHit >> savedCol >> savedTimeAccumulator)) {
+	if (!(in >> color >> beenHit >> col >> timeAccumulator)) {
 		throw GameError("Datos de globo no validos");
 	}
-
-	Balloon* balloon = new Balloon(game, rect, velocity, game->getTexture(Game::BALLOON), savedColor);
-
-	balloon->beenHit = savedBeenHit;
-	balloon->col = savedCol;
-	balloon->timeAccumulator = savedTimeAccumulator;
-
-	return balloon;
 }

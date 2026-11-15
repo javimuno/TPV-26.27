@@ -12,6 +12,10 @@ protected:
         const Vector2D<>& velocity, Texture* texture)
         : SceneObject(game, rect, texture), velocity(velocity) {}
 
+    //constructor de cargar
+    MobileObject(Game* game, std::istream& in, Texture* texture)
+        : SceneObject(game, in, texture), velocity(readVelocity(in)) {}
+
     void reverseHorizontalDirection()
     {
         velocity = Vector2D<>(-velocity.getX(), velocity.getY());
@@ -45,7 +49,7 @@ public:
         move(velocity * delta);
         return true;
     }
-
+    //guarda primero el rectangulo de Sceneobject y luego la velocidad de este
     void save(std::ostream& out) const override
     {
         SceneObject::save(out);

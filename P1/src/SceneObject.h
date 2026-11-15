@@ -20,6 +20,9 @@ protected:
     SceneObject(Game* game, const Rectangle& rect, Texture* texture)
         : GameObject(game), rect(rect), texture(texture) {}
 
+    SceneObject(Game* game, std::istream& in, Texture* texture)
+        : SceneObject(game, readRectangle(in), texture) {}
+
     const Rectangle& getRect() const { return rect; }
     Texture* getTexture() const { return texture; }
 

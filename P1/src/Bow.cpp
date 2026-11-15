@@ -121,15 +121,14 @@ void Bow::save(std::ostream& out) const
 
 }
 
-Bow* Bow::load(std::istream& in, Game* game)
+Bow::Bow(std::istream& in, Game* game)
+	: SceneObject(game, in, game->getTexture(Game::BOW)),
+	vel{}, numArrows(0), armed(false)
 {
-	const Rectangle rect = readRectangle(in);
 	float vx, vy;
-	int remainingArrows, armedValue;
-
-	if (!(in >> vx >> vy >> remainingArrows >> armedValue)) {
-		throw GameError("Parametros del arco invalidos.");
+	if (!(in >> vx >> vy >> numArrows >> armed) || numArrows < 0) {
+		throw GameError("Parametros del arco invalidos");
 	}
 
-	return new Bow(rect, Vector2D<>(vx, vy), game->getTexture(Game::BOW), remainingArrows, armedValue, game);
+	vel = Vector2D<>(vx, vy);
 }

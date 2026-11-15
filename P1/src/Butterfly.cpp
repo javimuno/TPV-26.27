@@ -12,7 +12,8 @@ void Butterfly::render() const
 }
 
 bool Butterfly::update(float delta)
-{
+{	
+	//frame sin cambio y eliminacion al llegar abajo de la pantalla
 	if (falling) {
 		MobileObject::update(delta);
 		return getRect().getTopLeftCorner().getY() < Game::WINDOW_HEIGHT;
@@ -103,29 +104,15 @@ void Butterfly::save(std::ostream& out) const
 
 }
 
-Butterfly* Butterfly::load(std::istream& in, Game* game)
+Butterfly::Butterfly(std::istream& in, Game* game)
+	: MobileObject(game, in, game->getTexture(Game::BUTTERFLY)),
+	falling(false), directionTimer(0.0f), animationRow(RIGHT_FLAP_ROW),
+	flapTimer(0.0f), animBack(1)
 {
-	const Rectangle rect = readRectangle(in);
-	const Vector2D<> velocity = readVelocity(in);
-
-	int savedAnimationRow, savedCol, savedAnimBack;
-	float savedDirectionTimer, savedFlapTimer;
-	bool savedFalling;
-
-	if (!(in >> savedFalling>>savedDirectionTimer>>savedAnimationRow>>savedCol>>savedFlapTimer>>savedAnimBack)) {
-		throw GameError("Datos de la mariposa no valido");
+	if (!(in >> falling >> directionTimer >> animationRow
+		>> col >> flapTimer >> animBack)) {
+		throw GameError("Datos de la mariposa no validos");
 	}
-
-	Butterfly* butterfly = new Butterfly(game, rect, velocity, game->getTexture(Game::BUTTERFLY));
-
-	butterfly->falling = savedFalling;
-	butterfly->directionTimer = savedDirectionTimer;
-	butterfly->animationRow = savedAnimationRow;
-	butterfly->col = savedCol;
-	butterfly->flapTimer = savedFlapTimer;
-	butterfly->animBack = savedAnimBack;
-
-	return butterfly;
 }
 
 void Butterfly::updateAnimation(float delta)

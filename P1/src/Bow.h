@@ -35,7 +35,6 @@ public:
 	void handleEvent(const SDL_Event& event);
 	bool hasArrows() const;
 	void save(std::ostream& out) const override;
-	static Bow* load(std::istream& in, Game* game);
-
+	Bow(std::istream& in, Game* game);
 };
 

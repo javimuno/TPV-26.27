@@ -49,7 +49,7 @@ bool Game::loadLevel(int levelNumber)
 		if (!std::filesystem::exists(filename)) {
 			return false;
 		}
-		throw std::string("No se puede abrir: " + filename);
+		throw GameError("No se puede abrir: " + filename);
 	}
 
 	//reincio
@@ -64,9 +64,6 @@ bool Game::loadLevel(int levelNumber)
 	std::string line;
 	int lineNumber = 0;
 	
-	file >> option;
-
-
 	while (std::getline(file,line))
 	{
 		++lineNumber;
@@ -137,14 +134,15 @@ bool Game::loadLevel(int levelNumber)
 			values >> levelGoal;
 
 			if (values.fail() || levelGoal < 0) {
-				throw FileFormatError(filename, lineNumber, "Valor de goal no válido");
+				throw FileFormatError(filename, lineNumber, "Valor de goal no valido");
 			}
 			
 
 		}
-		// Descarta el resto de la linea antes de leer la siguiente opcion.
+		
 		
 	}
+
 
 	return true;
 }
@@ -239,23 +237,23 @@ void Game::loadObjects(std::istream& file)
 		try
 		{
 			if (type == "bow") {
-				mainBow = Bow::load(values, this);
+				mainBow = new Bow(values, this);
 				addObject(mainBow);
 			}
 			else if (type == "arrow") {
-				addObject(Arrow::load(values, this));
+				addObject(new Arrow(values,this));
 			}
 			else if (type == "balloon") {
-				addObject(Balloon::load(values, this));
+				addObject(new Balloon(values, this));
 			}
 			else if (type == "butterfly") {
-				addObject(Butterfly::load(values, this));
+				addObject(new Butterfly(values, this));
 			}
 			else
 			{
 				throw GameError("Tipo de objeto no valido");
 			}
-		}
+		} //archivo y linea  del error devuelto
 		catch (const GameError& error)
 		{
 			throw FileFormatError("saved.txt", lineNumber, error.what());
@@ -264,27 +262,37 @@ void Game::loadObjects(std::istream& file)
 	}
 
 
+	if (mainBow == nullptr) {
+		throw FileFormatError("saved.txt", lineNumber, "Falta el arco");
+	}
+
 }
 
 Game::Game()
-	: exit(false),arrowsInFlight(0),initialButterflies(0),backgroundColor{0,0,0,255},balloonBaseSpeed((65.0f))
+	: window(nullptr), renderer(nullptr), backgroundColor{ 0, 0, 0, 255 },
+	textures{}, balloonBaseSpeed(65.0f), exit(false), mainBow(nullptr),
+	arrowsInFlight(0), initialButterflies(0)
 {
 	//carga del nivel
 	//loadLevel();
-	if (!loadLevel(currentLevel)) { throw std::string("Falta el nivel 1"); }
+	if (!loadLevel(currentLevel)) {
+		throw FileNotFoundError(std::string(LEVEL_ROOT) + std::to_string(currentLevel) + ".txt");
+	}
 
 	// Carga SDL y crea la ventana con su renderizador
-	if (!SDL_Init(SDL_INIT_VIDEO))
-		throw "SDL_Init: "s + SDL_GetError();
-
-	if (!SDL_CreateWindowAndRenderer(WINDOW_TITLE,
-		WINDOW_WIDTH, WINDOW_HEIGHT,
-		0, &window, &renderer))
-		throw "window or renderer: "s + SDL_GetError();
+	if (!SDL_Init(SDL_INIT_VIDEO)) {
+		throw SDLError("SDL_Init");
+	}	
 
 	// Carga las texturas al inicio
 	try {
-		textures.fill(nullptr);
+
+		if (!SDL_CreateWindowAndRenderer(WINDOW_TITLE, WINDOW_WIDTH,
+			WINDOW_HEIGHT, 0, &window, &renderer)) {
+			throw SDLError("SDL_CreateWindowAndRenderer");
+		}
+
+		//textures.fill(nullptr);
 		string imgRoot = IMAGE_ROOT;
 
 		for (size_t i = 0; i < textures.size(); i++) {
@@ -296,9 +304,12 @@ Game::Game()
 		for (Texture* texture : textures) {
 			delete texture;
 		}
-
-		SDL_DestroyRenderer(renderer);
-		SDL_DestroyWindow(window);
+		if (renderer != nullptr) {
+			SDL_DestroyRenderer(renderer);
+		}
+		if (window != nullptr) {
+			SDL_DestroyWindow(window);
+		}
 		SDL_Quit();
 		throw; // relanza la excepción
 	}
@@ -371,8 +382,7 @@ Game::update(float delta)
 		balloonTimer = 0.0f;
 	}
 	
-	mainBow->update(delta);
-
+	
 	//Fin de partida
 	if (!mainBow->hasArrows() && arrowsInFlight==0) {
 		std::cout << "Fin de partida" << std::endl;
@@ -484,7 +494,7 @@ void Game::updateObjects(float delta)
 	}
 }
 
-// Busca el primer globo alcanzado y suma puntos una sola vez por globo.
+// cambio de puntuación con el primer impacto que se haga
  int  Game::checkCollision(const Rectangle& rect)
  {
 	 const int scoreBeforeHit = score;
@@ -520,7 +530,7 @@ void Game::updateObjects(float delta)
 	 const int BUTTERFLY_HEIGHT = 46;
 
 	 const float x = static_cast<float>(randomInt(WINDOW_WIDTH*1/3, WINDOW_WIDTH - BUTTERFLY_WIDTH));
-	 const float y = static_cast<float>(randomInt(0, WINDOW_WIDTH - BUTTERFLY_HEIGHT));
+	 const float y = static_cast<float>(randomInt(0, WINDOW_HEIGHT - BUTTERFLY_HEIGHT));
 	 float velX = static_cast<float>(randomInt(25, 80));
 	 float velY = static_cast<float>(randomInt(20, 50));
 

@@ -19,11 +19,8 @@ int main(int argc, char* argv[])
 	}
 	catch (const GameError& error)
 	{
-		//así por consola
-		/*std::cout << "Error: " << error.what() << std::endl;
-		return 1;*/
-
-		//este bloque es con el simplemessage pero meh
+		
+		//este bloque es con el simplemessage
 		std::cerr << "Error: " << error.what() << '\n';
 
 		SDL_ShowSimpleMessageBox(
@@ -36,7 +33,7 @@ int main(int argc, char* argv[])
 	}
 	
 
-	// TODO: manejar excepciones
+	
 
 	return 0;
 }

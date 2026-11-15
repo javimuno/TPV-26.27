@@ -6,22 +6,22 @@
 //
 
 #include "texture.h"
+#include "GameError.h"
 
 #include <SDL3_image/SDL_image.h>
 #include <string>
 
 using namespace std;
 
-SDL_Texture*
-tryLoadTexture(SDL_Renderer* renderer, const char* filename)
+SDL_Texture* tryLoadTexture(SDL_Renderer* renderer, const char* filename)
 {
 	SDL_Texture* texture = IMG_LoadTexture(renderer, filename);
 
-	if (texture == nullptr)
-		throw "load image texture: "s + filename;
+	if (texture == nullptr) {
+		throw SDLError(std::string("Cargando textura ") + filename);
+	}
 
 	SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
-
 	return texture;
 }
 
