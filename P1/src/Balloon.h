@@ -25,5 +25,5 @@ public:
 	bool update(float delta) override;
 	bool hit(const Rectangle& obj) override;
 	void save(std::ostream& out)const override;
+	static Balloon* load(std::istream& in, Game* game);
 };
-

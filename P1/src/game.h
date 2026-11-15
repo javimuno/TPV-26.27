@@ -75,6 +75,8 @@ private:
 	void startLevel();
 	void clearObjects();
 	void saveGame() const;
+	void loadGame();
+	void loadObjects(std::istream&file);
 
 	bool exit;
 

@@ -92,7 +92,7 @@ bool Butterfly::hit(const Rectangle& tip)
 
 void Butterfly::save(std::ostream& out) const
 {
-	out << "butterfly: ";
+	out << "butterfly ";
 	MobileObject::save(out);
 	out << ' ' << falling << ' '
 		<< directionTimer << ' '
@@ -101,6 +101,31 @@ void Butterfly::save(std::ostream& out) const
 		<< flapTimer << ' '
 		<< animBack << '\n';
 
+}
+
+Butterfly* Butterfly::load(std::istream& in, Game* game)
+{
+	const Rectangle rect = readRectangle(in);
+	const Vector2D<> velocity = readVelocity(in);
+
+	int savedAnimationRow, savedCol, savedAnimBack;
+	float savedDirectionTimer, savedFlapTimer;
+	bool savedFalling;
+
+	if (!(in >> savedFalling>>savedDirectionTimer>>savedAnimationRow>>savedCol>>savedFlapTimer>>savedAnimBack)) {
+		throw GameError("Datos de la mariposa no valido");
+	}
+
+	Butterfly* butterfly = new Butterfly(game, rect, velocity, game->getTexture(Game::BUTTERFLY));
+
+	butterfly->falling = savedFalling;
+	butterfly->directionTimer = savedDirectionTimer;
+	butterfly->animationRow = savedAnimationRow;
+	butterfly->col = savedCol;
+	butterfly->flapTimer = savedFlapTimer;
+	butterfly->animBack = savedAnimBack;
+
+	return butterfly;
 }
 
 void Butterfly::updateAnimation(float delta)

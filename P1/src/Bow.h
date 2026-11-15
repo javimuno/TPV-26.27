@@ -7,6 +7,7 @@
 #include "vector2D.h"
 #include <SDL3/SDL_events.h>
 
+
 class Game;
 
 class Bow : public SceneObject
@@ -34,7 +35,7 @@ public:
 	void handleEvent(const SDL_Event& event);
 	bool hasArrows() const;
 	void save(std::ostream& out) const override;
-
+	static Bow* load(std::istream& in, Game* game);
 
 };
 

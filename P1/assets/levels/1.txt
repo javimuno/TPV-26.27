@@ -4,5 +4,5 @@ arrows 10
 baldelay 1000
 balpoints 10
 balspeed 0.2
-goal 10
+goal 100
 butterflies 4

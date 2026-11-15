@@ -23,5 +23,6 @@ public:
 	void render() const override;
 	bool update(float delta) override;
 	void save(std::ostream& out) const override;
+	static Arrow* load(std::istream& in, Game* game);
 };
 

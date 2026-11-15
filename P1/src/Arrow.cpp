@@ -44,7 +44,23 @@ bool Arrow::update(float delta)
 
 void Arrow::save(std::ostream& out) const  
 {
-	out << "arrow: ";
+	out << "arrow ";
 	MobileObject::save(out);
 	out << ' ' << balloonsHit << '\n';
+}
+
+//reconstruccion de la flecha
+Arrow* Arrow::load(std::istream& in, Game* game)
+{
+	const Rectangle rect = readRectangle(in);
+	const Vector2D<>velocity = readVelocity(in);
+	int savedBallonsHit;
+
+	if (!(in >> savedBallonsHit) || savedBallonsHit < 0) {
+		throw GameError("Contador de globos no valido");
+	}
+
+	Arrow* arrow = new Arrow(rect, velocity, game->getTexture(Game::ARROW), game);
+	arrow->balloonsHit = savedBallonsHit;
+	return arrow;
 }

@@ -29,6 +29,15 @@ protected:
     {
         return velocity.getX() < 0.0f;
     }
+    //velocidad del objeto movil
+    static Vector2D<> readVelocity(std::istream& in) {
+        float x, y;
+
+        if (!(in >> x >> y)) {
+            throw GameError("Velocidad no valida");
+        }
+        return Vector2D<>(x, y);
+    }
 
 public:
     bool update(float delta) override

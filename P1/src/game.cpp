@@ -5,6 +5,7 @@
 #include <fstream>
 #include <filesystem>
 #include <sstream>
+#include <memory>
 
 #include "texture.h"
 #include "Butterfly.h"
@@ -190,6 +191,81 @@ void Game::saveGame() const
 
 }
 
+void Game::loadGame()
+{
+	std::ifstream file{ "saved.txt" };
+	if (!file.is_open()) {
+		throw FileNotFoundError("saved.txt");
+	}
+
+	std::string line;
+	int savedLevel, savedScore;
+	float savedTimer;
+
+	std::getline(file, line);
+	std::istringstream header{ line };
+
+	if (!(header >> savedLevel >> savedScore >> savedTimer) || savedLevel < 1) {
+		throw FileFormatError("saved.txt", 1, "Cabecera no valida");
+	}
+
+	if (!loadLevel(savedLevel)) {
+		throw FileNotFoundError(std::to_string(savedLevel) + ".txt");
+	}
+
+	clearObjects();
+	loadObjects(file);
+
+	currentLevel = savedLevel;
+	score = savedScore;
+	balloonTimer = savedTimer;
+	
+}
+
+void Game::loadObjects(std::istream& file)
+{
+	std::string line;
+	int lineNumber = 1;
+
+	while (std::getline(file, line)) {
+		++lineNumber;
+		std::istringstream values{ line };
+		std::string type;
+
+		if (!(values >> type)) {
+			continue;
+		}
+
+		try
+		{
+			if (type == "bow") {
+				mainBow = Bow::load(values, this);
+				addObject(mainBow);
+			}
+			else if (type == "arrow") {
+				addObject(Arrow::load(values, this));
+			}
+			else if (type == "balloon") {
+				addObject(Balloon::load(values, this));
+			}
+			else if (type == "butterfly") {
+				addObject(Butterfly::load(values, this));
+			}
+			else
+			{
+				throw GameError("Tipo de objeto no valido");
+			}
+		}
+		catch (const GameError& error)
+		{
+			throw FileFormatError("saved.txt", lineNumber, error.what());
+		}
+		
+	}
+
+
+}
+
 Game::Game()
 	: exit(false),arrowsInFlight(0),initialButterflies(0),backgroundColor{0,0,0,255},balloonBaseSpeed((65.0f))
 {
@@ -338,6 +414,15 @@ Game::handleEvents()
 			if ((event.key.mod & SDL_KMOD_CTRL) != 0 && event.key.key == SDLK_S ) {
 				if (!event.key.repeat) { //1 vez solo
 					saveGame();
+				}
+
+				continue;
+			}
+		}
+		if (event.type == SDL_EVENT_KEY_DOWN) {
+			if ((event.key.mod & SDL_KMOD_CTRL) != 0 && event.key.key == SDLK_O ) {
+				if (!event.key.repeat) { //1 vez solo
+					loadGame();
 				}
 
 				continue;

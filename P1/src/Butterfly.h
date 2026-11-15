@@ -15,6 +15,7 @@ public:
 	bool update(float delta) override;
 	bool hit(const Rectangle& tip)override;
 	void save(std::ostream& out) const override;
+	static Butterfly* load(std::istream& in, Game* game);
 
 
 private:
