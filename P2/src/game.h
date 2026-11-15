@@ -8,9 +8,7 @@
 #include <random>
 #include <list>
 
-#include "Balloon.h"
 #include "Bow.h"
-#include "Arrow.h"
 #include "InfoBar.h"
 #include "SceneObject.h"
 
@@ -45,6 +43,7 @@ public:
 		ARROW,
 		BALLOON,
 		BUTTERFLY,
+		DIGITS,
 		NUM_TEXTURES
 	};
 
@@ -71,15 +70,23 @@ private:
 
 	float balloonDelay = 0.0f;
 	float timerBallons = 0.0f;
-	int goal = 0;
 	float balloonSpeed = 0.0f;
+	int balloonPoints = 0; 
+	int score = 0;
 	int numButterflies = 0.0f;
+	int currentLevel;
+	int goal;
+	bool gameOver;
 
 	// Elemento del juego
 	std::list<SceneObject*> sceneObjects;
 	Bow* playerBow;
 
 	InfoBar* infoBar = nullptr;
+
+	void saveGame() const;
+
+	void loadGame();
 public:
 	Game();
 	~Game();
@@ -100,7 +107,13 @@ public:
 
 	void loadLevel(const int numLevel);
 
-	void updateNumArrows(int newNumArrows);
+	void updateNumArrows();
+
+	void addScore(int points);
+
+	int getScore();
+
+	int getArrows() const;
 };
 
 inline Texture*

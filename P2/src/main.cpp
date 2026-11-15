@@ -10,6 +10,7 @@
 //#include <crtdbg.h>
 
 #include "game.h"
+#include "GameError.h"
 
 int main(int argc, char* argv[])
 {
@@ -23,9 +24,13 @@ int main(int argc, char* argv[])
         Game game;
         game.run();
     }
-    catch (const std::string& error) {
-        SDL_Log("Error: %s", error.c_str());
-        return 1;
+    catch (const GameError& error) {
+        SDL_ShowSimpleMessageBox(
+            SDL_MESSAGEBOX_ERROR,
+            "Error del juego",
+            error.what(),
+            nullptr
+        );
     }
 
     return 0;

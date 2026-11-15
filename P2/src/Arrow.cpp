@@ -22,7 +22,16 @@ bool Arrow::specificUpdate(float delta)
 Arrow::Arrow(Texture* text, const Point2D<float>& pos, const Point2D<float>& dim, const Vector2D<float>& vel, Game* g)
 	: MobileObject(text, pos, dim, vel, g) {}
 
+Arrow::Arrow(std::istream& is, Game* g)
+    : MobileObject(is, g->getTexture(Game::ARROW), g) {}
+
 bool Arrow::hit(const Rectangle& other)
 {
 	return false;
+}
+
+void Arrow::save(std::ostream& os) const {
+    os << "ARROW ";
+    MobileObject::save(os);
+    os << "\n";
 }

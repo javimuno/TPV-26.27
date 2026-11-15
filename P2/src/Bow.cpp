@@ -4,12 +4,10 @@
 
 #include <iostream>
 
-Bow::Bow(Texture* text, const Point2D<float>& pos, const Vector2D<float>& dim, const int iniNumArrows, Game* game) 
+Bow::Bow(Texture* text, const Point2D<float>& pos, const Vector2D<float>& dim, Game* game) 
 	: SceneObject(game, text, pos, dim),
-    numArrows(iniNumArrows), 
     isLoaded(false)
 {
-	std::cout << "Arrows: " << numArrows << std::endl;
 }
 
 bool Bow::hit(const Rectangle& other)
@@ -50,9 +48,8 @@ void Bow::handleEvent(const SDL_Event& event)
     // Cargar una flecha
     if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_LEFT)
     {
-        if (numArrows > 0 && !isLoaded)
+        if (game->getArrows() > 0 && !isLoaded)
         {
-            numArrows--;
             isLoaded = true;
         }
     }
@@ -67,11 +64,9 @@ void Bow::handleEvent(const SDL_Event& event)
 
             game->addArrow({ x, y }, { 190.0f, 0.0f });
 
-            game->updateNumArrows(numArrows);
+            game->updateNumArrows();
 
             isLoaded = false;
-
-            std::cout << "Arrows: " << numArrows << std::endl;
         }
     }
     // Movimiento del arco

@@ -14,11 +14,10 @@ private:
 	Vector2D<float> velocity = {0, 0};
 
 	bool isLoaded;
-	int numArrows;
 
 public:
 
-	Bow(Texture* text, const Point2D<float>& pos, const Vector2D<float>& dim, const int iniNumArrows, Game* game);
+	Bow(Texture* text, const Point2D<float>& pos, const Vector2D<float>& dim, Game* game);
 	bool hit(const Rectangle& other) override;
 	void render() const override;
 	bool update(float delta) override;

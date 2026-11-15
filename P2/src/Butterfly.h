@@ -26,9 +26,14 @@ protected:
 
 public: 
 	Butterfly(Texture* text, const Point2D<float>& pos, const Vector2D<float>& dim, const Vector2D<float>& vel, Game* g);
+	
+	Butterfly(std::istream& is, Game* g);
+	
 	virtual ~Butterfly() = default;
 	bool hit(const Rectangle& other) override;
 	virtual bool canBeHit() const override { return true; };
 	void render() const override;
+
+	void save(std::ostream& os) const override;
 };
 

@@ -101,12 +101,15 @@
     <ClCompile Include="Balloon.cpp" />
     <ClCompile Include="Bow.cpp" />
     <ClCompile Include="Butterfly.cpp" />
+    <ClCompile Include="FileFormatError.cpp" />
+    <ClCompile Include="FileNotFoundError.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="InfoBar.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MobileObject.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="SDLError.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -114,12 +117,16 @@
     <ClInclude Include="Balloon.h" />
     <ClInclude Include="Bow.h" />
     <ClInclude Include="Butterfly.h" />
+    <ClInclude Include="FileFormatError.h" />
+    <ClInclude Include="FileNotFoundError.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="GameError.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="InfoBar.h" />
     <ClInclude Include="MobileObject.h" />
     <ClInclude Include="rectangle.h" />
     <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="SDLError.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="vector2D.h" />
   </ItemGroup>

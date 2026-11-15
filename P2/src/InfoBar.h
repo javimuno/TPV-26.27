@@ -1,14 +1,17 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include "GameObject.h"
 
-class InfoBar {
-private:
-    SDL_Renderer* renderer;
+class InfoBar: public GameObject {
+private: 
+    void renderArrows() const;
+    void renderScore() const;
 
 public:
-    InfoBar(SDL_Renderer* renderer);
+    InfoBar(Game* g);
 
-    void render(int arrows) const;
+    bool update(float dt) override;
+    void render() const override;
 };
 

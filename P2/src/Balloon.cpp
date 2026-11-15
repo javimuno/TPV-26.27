@@ -2,9 +2,26 @@
 #include "vector2D.h"
 #include "game.h"
 #include "texture.h"
+#include "FileFormatError.h"
 
-Balloon::Balloon(Texture* text, const Point2D<float>& pos, const Point2D<float>& dim, const Vector2D<float>& vel, Game* g, int c)
-	: MobileObject(text, pos, dim, vel, g), color(c) {}
+Balloon::Balloon(Texture* text, const Point2D<float>& pos, const Point2D<float>& dim, const Vector2D<float>& vel, Game* g, int c, int p)
+	: MobileObject(text, pos, dim, vel, g), color(c), points(p) {}
+
+Balloon::Balloon(std::istream& is, Game* g, int p)
+	: MobileObject(is, g->getTexture(Game::BALLOON), g),
+	color(0),
+	points(p),
+	exploded(false),
+	animationTimer(0.0f),
+	explosionFrame(0)
+{
+	if (!(is >> color >> exploded >> animationTimer >> explosionFrame))
+		throw FileFormatError(
+			"saved.txt",
+			0,
+			"Error al leer los datos de Balloon"
+		);
+}
 
 void Balloon::render() const
 {
@@ -20,6 +37,9 @@ bool Balloon::hit(const Rectangle& obj)
 		explosionFrame = 0;
 		animationTimer = 0.0f;
 		exploded = true;
+
+		game->addScore(points);
+
 		return true;
 	}
 
@@ -47,4 +67,14 @@ bool Balloon::specificUpdate(float delta)
 	float bottomY = rect->getTopLeftCorner().getY() + rect->getHeight();
 
 	return bottomY > 0.0f;
+}
+
+void Balloon::save(std::ostream& os) const {
+	os << "BALLOON ";
+	MobileObject::save(os);
+
+	os << color << " "
+		<< exploded << " "
+		<< animationTimer << " "
+		<< explosionFrame << "\n";
 }

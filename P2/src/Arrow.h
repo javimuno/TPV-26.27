@@ -14,8 +14,12 @@ public:
 
 	Arrow(Texture* text, const Point2D<float>& pos, const Point2D<float>& dim, const Vector2D<float>& vel, Game* g);
 
+	Arrow(std::istream& is, Game* g);
+
 	virtual ~Arrow() = default;
 
 	bool hit(const Rectangle& other) override;
+
+	void save(std::ostream& os) const override;
 };
 

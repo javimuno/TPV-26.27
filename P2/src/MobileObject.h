@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneObject.h"
 #include "GameObject.h"
+#include <iosfwd>
 
 class MobileObject : public SceneObject
 {
@@ -16,5 +17,9 @@ private:
 public:
 	MobileObject(Texture* text, const Point2D<float>& pos, const Vector2D<float>& dim, const Vector2D<float>& vel, Game* g);
 
+	MobileObject(std::istream& is, Texture* tex, Game* g);
+
 	virtual bool update(float dt) override;
+
+	void save(std::ostream& os) const override;
 };

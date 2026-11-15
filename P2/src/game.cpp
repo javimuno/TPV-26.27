@@ -9,6 +9,14 @@
 
 #include "texture.h"
 #include "Butterfly.h"
+#include "Balloon.h"
+#include "Bow.h"
+#include "Arrow.h"
+
+#include "GameError.h"
+#include "SDLError.h"
+#include "FileNotFoundError.h"
+#include "FileFormatError.h"
 
 using namespace std;
 
@@ -30,11 +38,145 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 	TextureSpec{"bow.png", 1, 2},
 	{"arrow.png"},
 	{"balloons.png",7,6},
-	{"butterfly.png",4,10}
+	{"butterfly.png",4,10},
+	{"digits.png", 1, 10}
 };
 
+void Game::saveGame() const
+{
+	std::ofstream file("saved.txt");
+
+	if (!file.is_open())
+		throw std::string("Error al guardar la partida");
+
+	// Identificador y versión del archivo
+	file << "GAME 1\n";
+
+	// Información general de la partida
+	file << currentLevel << " "
+		<< score << " "
+		<< numArrows << " "
+		<< timerBallons << "\n";
+
+	// Número de objetos
+	file << sceneObjects.size() << "\n";
+
+	// Guardar todos los objetos
+	for (SceneObject* obj : sceneObjects)
+		obj->save(file);
+
+	if (!file.good())
+		throw std::string("Error al escribir el archivo de guardado");
+
+	file.close();
+}
+
+void Game::loadGame()
+{
+	const std::string filename = "saved.txt";
+	std::ifstream file(filename);
+
+	if (!file.is_open())
+		throw FileNotFoundError(filename);
+
+	size_t lineno = 1;
+
+	// Comprobar cabecera
+	std::string header;
+	int version;
+
+	if (!(file >> header >> version) || header != "GAME" || version != 1)
+		throw FileFormatError(filename, lineno, "Cabecera incorrecta");
+
+	lineno++;
+
+	// Leer información general
+	int savedLevel;
+	int savedScore;
+	int savedArrows;
+	float savedTimer;
+
+	if (!(file >> savedLevel >> savedScore >> savedArrows >> savedTimer))
+		throw FileFormatError(filename, lineno, "Error al leer los datos generales");
+
+	if (savedLevel < 1)
+		throw FileFormatError(filename, lineno, "El nivel debe ser mayor que cero");
+
+	if (savedArrows < 0)
+		throw FileFormatError(filename, lineno, "El numero de flechas no puede ser negativo");
+
+	if (savedTimer < 0 || !std::isfinite(savedTimer))
+		throw FileFormatError(filename, lineno, "El temporizador no es valido");
+
+	lineno++;
+
+	// Leer número de objetos
+	size_t numObjects;
+
+	if (!(file >> numObjects))
+		throw FileFormatError(filename, lineno, "Error al leer el numero de objetos");
+
+	lineno++;
+
+	// Cargar la configuración del nivel.
+	// Esto recupera los parámetros que no guardamos.
+	loadLevel(savedLevel);
+
+	// Eliminar los objetos que había en la partida actual
+	for (SceneObject* obj : sceneObjects)
+		delete obj;
+
+	sceneObjects.clear();
+
+	// Restaurar los datos generales guardados.
+	currentLevel = savedLevel;
+	score = savedScore;
+	numArrows = savedArrows;
+	timerBallons = savedTimer;
+
+	// Reconstruir los objetos
+	for (size_t i = 0; i < numObjects; i++)
+	{
+		std::string type;
+
+		if (!(file >> type))
+			throw FileFormatError(filename, lineno, "Falta el tipo de objeto");
+
+		SceneObject* obj = nullptr;
+
+		try {
+			if (type == "ARROW")
+				obj = new Arrow(file, this);
+
+			else if (type == "BALLOON")
+				obj = new Balloon(file, this, balloonPoints);
+
+			else if (type == "BUTTERFLY")
+				obj = new Butterfly(file, this);
+
+			else
+				throw FileFormatError(filename, lineno,
+					"Tipo de objeto desconocido: " + type);
+		}
+		catch (const FileFormatError&) {
+			throw;
+		}
+		catch (const std::exception& e) {
+			throw FileFormatError(filename, lineno, e.what());
+		}
+
+		sceneObjects.push_back(obj);
+		lineno++;
+	}
+
+	if (file.bad())
+		throw FileFormatError(filename, lineno, "Error al leer el archivo");
+
+	gameOver = false;
+}
+
 Game::Game()
-	: exit(false)
+	: exit(false), currentLevel(1), goal(0), gameOver(false)
 {
 	textures.fill(nullptr);
 	window = nullptr;
@@ -44,7 +186,7 @@ Game::Game()
 	try {
 		// Carga SDL
 		if (!SDL_Init(SDL_INIT_VIDEO))
-			throw "Error al inicializar SDL: "s + SDL_GetError();
+			throw SDLError("Error al inicializar SDL");
 
 		// Crea la ventana y el renderizador
 		if (!SDL_CreateWindowAndRenderer(
@@ -55,8 +197,7 @@ Game::Game()
 			&window,
 			&renderer))
 		{
-			throw "Error al crear la ventana o el renderer: "s
-				+ SDL_GetError();
+			throw SDLError("Error al crear la ventana o el renderer");
 		}
 
 		// Carga las texturas al inicio
@@ -83,13 +224,12 @@ Game::Game()
 
 		// Carga la configuración del nivel
 		loadLevel(1);
-		infoBar = new InfoBar(renderer);
+		infoBar = new InfoBar(this);
 		// Crea el arco del jugador
 		playerBow = new Bow(
 			getTexture(BOW),
 			{ WINDOW_WIDTH / 10, WINDOW_HEIGHT / 2 },
 			{GAME_SCALE, GAME_SCALE},
-			numArrows,
 			this
 		);
 
@@ -157,7 +297,7 @@ Game::render() const
 	}
 	playerBow->render();
 
-	infoBar->render(numArrows);
+	infoBar->render();
 
 	SDL_RenderPresent(renderer);
 
@@ -167,6 +307,8 @@ Game::render() const
 void
 Game::update(float delta)
 {
+	if (gameOver) return;
+
 	auto it = sceneObjects.begin();
 
 	while (it != sceneObjects.end())
@@ -192,6 +334,16 @@ Game::update(float delta)
 	}
 	playerBow->update(delta);
 	
+	// Comprobar si se ha alcanzado el objetivo del nivel
+	if (score >= goal) {
+		currentLevel++;
+		loadLevel(currentLevel);
+	}
+
+	// Comprobar si se han agotado las flechas
+	if (numArrows <= 0) {
+		gameOver = true;
+	}
 }
  // pulsaciones, actualizaciones, dibujo y espera ms antes de nueva vuelta
 void
@@ -199,7 +351,7 @@ Game::run()
 {
 	const Uint32 frameDelay = FRAME_RATE;
 
-	while (!exit) {
+	while (!gameOver) {
 
 		Uint32 frameStart = SDL_GetTicks();
 		handleEvents();
@@ -212,20 +364,31 @@ Game::run()
 	}
 }
 
-void
-Game::handleEvents()
+void Game::handleEvents()
 {
 	SDL_Event event;
 
-	// Only quit is handled directly, everything else is delegated
 	while (SDL_PollEvent(&event)) {
-		if (event.type == SDL_EVENT_QUIT)
-			exit = true;
-		else if (event.type == SDL_EVENT_KEY_DOWN && event.key.key == SDLK_ESCAPE)
-			exit = true;
 
-		else
+		if (event.type == SDL_EVENT_QUIT) {
+			exit = true;
+		}
+		else if (event.type == SDL_EVENT_KEY_DOWN &&
+			event.key.key == SDLK_ESCAPE) {
+			exit = true;
+		}
+		else if (event.type == SDL_EVENT_KEY_DOWN &&
+			(event.key.mod & SDL_KMOD_CTRL)) {
+
+			if (event.key.key == SDLK_S)
+				saveGame();
+
+			else if (event.key.key == SDLK_O)
+				loadGame();
+		}
+		else {
 			playerBow->handleEvent(event);
+		}
 	}
 }
 
@@ -253,7 +416,7 @@ Game::addBalloon()
 	const int color = colorDist(randomGenerator);
 
 	sceneObjects.push_back(
-		new Balloon(getTexture(BALLOON), position, {GAME_SCALE, GAME_SCALE}, { 0.0f, -balloonSpeed }, this, color)
+		new Balloon(getTexture(BALLOON), position, {GAME_SCALE, GAME_SCALE}, { 0.0f, -balloonSpeed }, this, color, balloonPoints)
 	);
 }
 
@@ -321,7 +484,7 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 
 	 // Comprobar que se ha podido abrir el fichero
 	 if (!file.is_open()) {
-		 throw "No se pudo abrir el mapa: "s + levelPath;
+		 throw FileNotFoundError(levelPath);
 	 }
 
 	 std::string line;
@@ -343,42 +506,46 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 
 		 if (keyword == "arrows") {
 			 if (!(iss >> numArrows)) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": arrows necesita un numero entero.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "arrows necesita un numero entero"
+				 );
 			 }
 
 			 if (numArrows < 0) {
-					 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": arrows no puede ser negativo.";
+					 throw FileFormatError(
+						 levelPath,
+						 lineno, "arrows no puede ser negativo."
+					 );
 			 }
 
 			 std::string extra;
 			 if (iss >> extra) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": sobran datos despues de arrows.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "sobran datos despues de arrows."
+				 );
 			 }
 		 }
 		 else if (keyword == "baldelay") {
 			 if (!(iss >> balloonDelay)) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": baldelay necesita un numero.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "baldelay necesita un numero."
+				 );
 			 }
 
 			 if (balloonDelay <= 0) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": baldelay debe ser positivo.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "baldelay debe ser positivo.");
 			 }
 
 			 std::string extra;
 			 if (iss >> extra) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": sobran datos despues de baldelay.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "sobran datos despues de baldelay.");
 			 }
 		 }
 		 else if (keyword == "bgcolor") {
@@ -386,26 +553,26 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 
 			 // Comprobar que se han leido los tres componentes
 			 if (!(iss >> r >> g >> b)) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": bgcolor necesita tres valores RGB.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "bgcolor necesita tres valores RGB.");
 			 }	
 
 			 // Comprobar que cada componente esta entre 0 y 255
 			 if (r < 0 || r > 255 ||
 				 g < 0 || g > 255 ||
 				 b < 0 || b > 255) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": los valores RGB deben estar entre 0 y 255.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "los valores RGB deben estar entre 0 y 255.");
 			 }
 
 			 // Comprobar que no hay datos adicionales
 			 std::string extra;
 			 if (iss >> extra) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": sobran datos despues de bgcolor.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "sobran datos despues de bgcolor.");
 			 }
 
 			 // Guardar el color de fondo
@@ -414,28 +581,49 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 			 bgB = static_cast<Uint8>(b);
 		 }
 		 else if (keyword == "balpoints") {
-			
+			 int n;
+
+			 if (!(iss >> n)) {
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "balpoints necesita un numero entero.");
+			 }
+
+			 if (n < 0) {
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "balpoints no puede ser negativo.");
+			 }
+
+			 std::string extra;
+			 if (iss >> extra) {
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "sobran datos despues de balpoints.");
+			 }
+
+			 balloonPoints = n;
 		 }
 		 else if (keyword == "balspeed") {
 			 float v;
 
 			 if (!(iss >> v)) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": balspeed necesita un numero.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "balspeed necesita un numero.");
 			 }
 
 			 if (v <= 0 || !std::isfinite(v)) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": balspeed debe ser positivo.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "balspeed debe ser positivo.");
 			 }
 
 			 std::string extra;
 			 if (iss >> extra) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": sobran datos despues de balspeed.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "sobran datos despues de balspeed.");
 			 }
 
 			 balloonSpeed = v * 1000;
@@ -444,22 +632,22 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 			 int n;
 
 			 if (!(iss >> n)) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": goal necesita un numero entero.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "goal necesita un numero entero.");
 			 }
 
 			 if (n < 0) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": goal no puede ser negativo.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "goal no puede ser negativo.");
 			 }
 
 			 std::string extra;
 			 if (iss >> extra) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": sobran datos despues de goal.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "sobran datos despues de goal.");
 			 }
 
 			 goal = n;
@@ -468,22 +656,22 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 			 int n;
 
 			 if (!(iss >> n)) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": butterflies necesita un numero entero.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "butterflies necesita un numero entero.");
 			 }
 
 			 if (n < 0) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": butterflies no puede ser negativo.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "butterflies no puede ser negativo.");
 			 }
 
 			 std::string extra;
 			 if (iss >> extra) {
-				 throw "Error de formato en "s + levelPath
-					 + ", linea " + std::to_string(lineno)
-					 + ": sobran datos despues de butterflies.";
+				 throw FileFormatError(
+					 levelPath,
+					 lineno, "sobran datos despues de butterflies.");
 			 }
 
 			 numButterflies = n;
@@ -503,7 +691,24 @@ Game::addArrow(const Vector2D<float>& pos, const Vector2D<float>& vel) {
 	 }
  }
 
- void Game::updateNumArrows(int newNumArrows)
+ void Game::updateNumArrows()
  {
-	 numArrows = newNumArrows;
+	 --numArrows;
+ }
+
+ void Game::addScore(int points)
+ {
+	 score += points;
+	 if (score < 0) score = 0;
+	 std::cout << "Score: " << score << std::endl;
+ }
+
+ int Game::getScore()
+ {
+	 return score;
+ }
+
+ int Game::getArrows() const
+ {
+	 return numArrows;
  }

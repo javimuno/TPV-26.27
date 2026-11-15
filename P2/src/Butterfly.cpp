@@ -9,11 +9,28 @@ Butterfly::Butterfly(Texture* text, const Point2D<float>& pos, const Vector2D<fl
     animationFrame(0),
     animationTimer(0.0f) {}
 
+Butterfly::Butterfly(std::istream& is, Game* g)
+    : MobileObject(is, g->getTexture(Game::BUTTERFLY), g),
+    dead(false),
+    directionTimer(0.0f),
+    nextDirectionChange(0.0f),
+    animationFrame(0),
+    animationTimer(0.0f)
+{
+    if (!(is >> dead
+        >> directionTimer
+        >> nextDirectionChange
+        >> animationFrame
+        >> animationTimer))
+        throw std::string("Error al leer los datos de Butterfly");
+}
+
 bool Butterfly::hit(const Rectangle& other)
 {
     if (!dead && rect->hasIntersection(other))
     {
         dead = true;
+        game->addScore(-5);
         return true;
     }
 
@@ -117,4 +134,15 @@ void Butterfly::render() const
     {
         texture->renderFrame(rect->to_sdl(), 1, animationFrame);
     }
+}
+
+void Butterfly::save(std::ostream& os) const {
+    os << "BUTTERFLY ";
+    MobileObject::save(os);
+
+    os << dead << " "
+        << directionTimer << " "
+        << nextDirectionChange << " "
+        << animationFrame << " "
+        << animationTimer << "\n";
 }
