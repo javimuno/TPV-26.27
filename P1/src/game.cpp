@@ -3,6 +3,7 @@
 #include <string>
 #include <SDL3_image/SDL_image.h>
 #include <fstream>
+#include <filesystem>
 
 #include "texture.h"
 #include "Butterfly.h"
@@ -32,15 +33,29 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 
 // Lee las flechas iniciales y el intervalo entre globos.
 // Ignora el resto de opciones y lanza una excepcion si un valor no es valido.
-void Game::loadLevel()
+bool Game::loadLevel(int levelNumber)
 {
 
+	const std::string filename = std::string((LEVEL_ROOT)+std::to_string(levelNumber)+".txt");
 
-	std::ifstream file(std::string (LEVEL_ROOT) + "1.txt");
+	std::ifstream file(filename);
+	//std::ifstream file(std::string(LEVEL_ROOT)+"1.txt");
 
 	if (!file.is_open()) {
-		throw std::string("No se puede abrir el archivo de nivel");
+
+		if (!std::filesystem::exists(filename)) {
+			return false;
+		}
+		throw std::string("No se puede abrir: " + filename);
 	}
+
+	//reincio
+	levelGoal = 0; 
+	exit = false;
+	arrowsInFlight = 0;
+	initialButterflies = 0;
+	backgroundColor = { 0,0,0,255 };
+	balloonBaseSpeed = 65.0f;
 
 	std::string option;
 	
@@ -105,17 +120,53 @@ void Game::loadLevel()
 			balloonBaseSpeed = ballspeed*1000; //porque viene en px/ms -.-
 		}
 
+		else if (option == "goal") {
+			file >> levelGoal;
+
+			if (file.fail() || levelGoal < 0) {
+				throw std::string("Valor de goal no válido");
+			}
+			
+
+		}
 		// Descarta el resto de la linea antes de leer la siguiente opcion.
 		file.ignore(1000, '\n');
 		file >> option;
 	}
+
+	return true;
+}
+
+void Game::startLevel()
+{
+	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW), iniArrows_file, false, this);
+
+	addObject(mainBow);
+	for (int i = 0; i < initialButterflies; i++) {
+		addButterfly();
+	}
+}
+
+void Game::clearObjects()
+{
+	for (SceneObject* object : objects) {
+		delete object;
+	}
+
+	for (Texture* texture : textures) {
+		delete texture;
+	}
+
+	objects.clear();
+	mainBow = nullptr;
 }
 
 Game::Game()
 	: exit(false),arrowsInFlight(0),initialButterflies(0),backgroundColor{0,0,0,255},balloonBaseSpeed((65.0f))
 {
 	//carga del nivel
-	loadLevel();
+	//loadLevel();
+	if (!loadLevel(currentLevel)) { throw std::string("Falta el nivel 1"); }
 
 	// Carga SDL y crea la ventana con su renderizador
 	if (!SDL_Init(SDL_INIT_VIDEO))
@@ -152,29 +203,15 @@ Game::Game()
 
 	// TODO: crear los objetos del juego
 
-	//arco
-	mainBow = new Bow(Rectangle({ 100.0f,300.0f }, 100.0f, 100.0f), Vector2D<>{ 0.0f, 0.0f }, getTexture(BOW),iniArrows_file, false,this);
 	
-	addObject(mainBow);
-	for (int i = 0; i < initialButterflies; i++) {
-		addButterfly();
-	}
+	startLevel();
 
 }
 
 //texturas, renderizador y ventana y cierre
 Game::~Game()
 {
-
-	for (SceneObject* object : objects) {
-		delete object;
-	}
-
-	for (Texture* texture : textures) {
-		delete texture;
-	}
-
-
+	clearObjects();
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
@@ -201,6 +238,21 @@ Game::update(float delta)
 {
 	
 	updateObjects(delta);
+	
+	if (levelGoal > 0 && score >= levelGoal) {
+		if (loadLevel(currentLevel + 1)) {
+			++currentLevel;
+			clearObjects();
+			startLevel();
+		}
+		else
+		{
+			std::cout << "Victoria\n";
+			exit = true;
+		}
+		return;
+	}
+	
 
 	balloonTimer += delta;
 
@@ -340,7 +392,7 @@ void Game::updateObjects(float delta)
 	 const int BUTTERFLY_WIDTH = 60;
 	 const int BUTTERFLY_HEIGHT = 46;
 
-	 const float x = static_cast<float>(randomInt(0, WINDOW_WIDTH - BUTTERFLY_WIDTH));
+	 const float x = static_cast<float>(randomInt(WINDOW_WIDTH*1/3, WINDOW_WIDTH - BUTTERFLY_WIDTH));
 	 const float y = static_cast<float>(randomInt(0, WINDOW_WIDTH - BUTTERFLY_HEIGHT));
 	 float velX = static_cast<float>(randomInt(25, 80));
 	 float velY = static_cast<float>(randomInt(20, 50));

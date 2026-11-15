@@ -59,7 +59,10 @@ private:
 	static constexpr float BALLOON_MAX_SPEED_RATIO = 1.2f; //120%
 	static constexpr float BALLOON_AREA_START = 1.0f / 3.0f;
 
-	int balloonBaseSpeed;
+	float balloonBaseSpeed=0.0f;
+	int currentLevel = 1;
+	int levelGoal=0;
+
 	
 
 	void render() const;
@@ -68,6 +71,9 @@ private:
 	void addBalloon();
 	void updateObjects(float delta);
 	void addButterfly();
+	bool loadLevel(int levelNumber);
+	void startLevel();
+	void clearObjects();
 
 	bool exit;
 
@@ -89,7 +95,7 @@ private:
 	int initialButterflies;
 
 
-	void loadLevel();
+	
 
 public:
 	Game();
