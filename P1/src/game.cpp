@@ -34,116 +34,90 @@ constexpr array<TextureSpec, Game::NUM_TEXTURES> textureList{
 	{"butterfly.png",4,10},
 };
 
-// Lee las flechas iniciales y el intervalo entre globos.
-// Ignora el resto de opciones y lanza una excepcion si un valor no es valido.
+// lee las flechas iniciales y el intervalo entre globos
+// ignora el resto de opciones y lanza una excepcion si un valor no es valido
 bool Game::loadLevel(int levelNumber)
 {
-
-	const std::string filename = std::string((LEVEL_ROOT)+std::to_string(levelNumber)+".txt");
-
+	const std::string filename = LEVEL_ROOT + std::to_string(levelNumber) + ".txt";
 	std::ifstream file(filename);
-	//std::ifstream file(std::string(LEVEL_ROOT)+"1.txt");
-
 	if (!file.is_open()) {
-
 		if (!std::filesystem::exists(filename)) {
 			return false;
 		}
 		throw GameError("No se puede abrir: " + filename);
 	}
 
-	//reincio
-	levelGoal = 0; 
-	exit = false;	
+	levelGoal = 0;
+	exit = false;
 	iniArrows_file = 0;
 	initialButterflies = 0;
-	backgroundColor = { 0,0,0,255 };
+	backgroundColor = { 0, 0, 0, 255 };
 	balloonBaseSpeed = 65.0f;
 
-	std::string option;
 	std::string line;
 	int lineNumber = 0;
-	
-	while (std::getline(file,line))
-	{
+	while (std::getline(file, line)) {
 		++lineNumber;
 		std::istringstream values{ line };
-
 		std::string option;
 		if (!(values >> option) || option[0] == '#') {
 			continue;
 		}
-		
-		
-
-		if (option == "arrows") {
-			values >> iniArrows_file;
-
-			if (values.fail()||iniArrows_file<0) {
-				throw FileFormatError(filename, lineNumber, "Valor de arrows no valido");
-			}
+		if (!readLevelOption(option, values)) {
+			throw FileFormatError(filename, lineNumber,
+				"Valor de " + option + " no valido");
 		}
-
-		else if (option == "baldelay") {
-			int baldelayAux;
-			values >> baldelayAux;			
-
-			if (values.fail() || baldelayAux<=0) {
-				throw FileFormatError(filename, lineNumber, "Valor de baldelay no valido");
-			}
-			balloonInterval_file = baldelayAux / 1000.0f;
+	}
+	return true;
+}
+//si devuelve false el valor esta mal y loadlevel lanza excep con numero de linea
+bool Game::readLevelOption(const std::string& option, std::istream& values)
+{
+	if (option == "arrows") {
+		return (values >> iniArrows_file) && iniArrows_file >= 0;
+	}
+	if (option == "butterflies") {
+		return (values >> initialButterflies) && initialButterflies >= 0;
+	}
+	if (option == "goal") {
+		return (values >> levelGoal) && levelGoal >= 0;
+	}
+	if (option == "bgcolor") {
+		return readBackgroundColor(values);
+	}
+	if (option == "baldelay") {
+		int delay;
+		if (!(values >> delay) || delay <= 0) {
+			return false;
 		}
-
-		else if (option == "butterflies") {
-			values >> initialButterflies;
-
-			if (values.fail() || initialButterflies < 0) {
-				throw FileFormatError(filename, lineNumber, "Valor de butterflies no valido");
-			}
+		balloonInterval_file = delay / 1000.0f;
+	}
+	else if (option == "balspeed") {
+		float speed;
+		if (!(values >> speed) || speed <= 0.0f) {
+			return false;
 		}
+		// El archivo da la velocidad en píxeles por milisegundo.
+		balloonBaseSpeed = speed * 1000.0f;
+	}
+	return true;
+}
 
-		else if (option == "bgcolor") {
-			int red, green, blue;
-			values >> red >> green >> blue;
-
-			if (values.fail() || red < 0 || red>255 ||
-				green < 0 || green > 255 || blue < 0 || blue > 255) {
-				throw FileFormatError(filename, lineNumber, "Valor de bgColor no valido");
-			}
-
-			backgroundColor = {
-				static_cast<Uint8>(red),
-				static_cast<Uint8>(green),
-				static_cast<Uint8>(blue),
-				255
-			};
-		}
-
-		else if (option == "balspeed") {
-			float ballspeed;
-			values >> ballspeed;
-
-			if (values.fail() || ballspeed <= 0.0f) {
-				throw FileFormatError(filename, lineNumber, "Valor ballSpeed no valido");
-			}
-
-			balloonBaseSpeed = ballspeed*1000; //porque viene en px/ms -.-
-		}
-
-		else if (option == "goal") {
-			values >> levelGoal;
-
-			if (values.fail() || levelGoal < 0) {
-				throw FileFormatError(filename, lineNumber, "Valor de goal no valido");
-			}
-			
-
-		}
-		
-		
+bool Game::readBackgroundColor(std::istream& values)
+{
+	int red, green, blue;
+	if (!(values >> red >> green >> blue) ||
+		red < 0 || red > 255 || green < 0 || green > 255 ||
+		blue < 0 || blue > 255) {
+		return false;
 	}
 
-
+	backgroundColor = {
+		static_cast<Uint8>(red),
+		static_cast<Uint8>(green),
+		static_cast<Uint8>(blue),
+		255
+	};
 	return true;
 }
 
@@ -223,49 +197,48 @@ void Game::loadGame()
 void Game::loadObjects(std::istream& file)
 {
 	std::string line;
-	int lineNumber = 1;
+	int lineNumber = 1; // La primera línea contiene la cabecera.
 
 	while (std::getline(file, line)) {
 		++lineNumber;
 		std::istringstream values{ line };
 		std::string type;
-
 		if (!(values >> type)) {
 			continue;
 		}
 
-		try
-		{
-			if (type == "bow") {
-				mainBow = new Bow(values, this);
-				addObject(mainBow);
-			}
-			else if (type == "arrow") {
-				addObject(new Arrow(values,this));
-			}
-			else if (type == "balloon") {
-				addObject(new Balloon(values, this));
-			}
-			else if (type == "butterfly") {
-				addObject(new Butterfly(values, this));
-			}
-			else
-			{
-				throw GameError("Tipo de objeto no valido");
-			}
-		} //archivo y linea  del error devuelto
-		catch (const GameError& error)
-		{
+		try {
+			loadObject(type, values);
+		}
+		catch (const GameError& error) {
 			throw FileFormatError("saved.txt", lineNumber, error.what());
 		}
-		
 	}
-
 
 	if (mainBow == nullptr) {
 		throw FileFormatError("saved.txt", lineNumber, "Falta el arco");
 	}
+}
 
+//lo que había dentro del try de loadObjects() para acortar
+void Game::loadObject(const std::string& type, std::istream& values)
+{
+	if (type == "bow") {
+		mainBow = new Bow(values, this);
+		addObject(mainBow);
+	}
+	else if (type == "arrow") {
+		addObject(new Arrow(values, this));
+	}
+	else if (type == "balloon") {
+		addObject(new Balloon(values, this));
+	}
+	else if (type == "butterfly") {
+		addObject(new Butterfly(values, this));
+	}
+	else {
+		throw GameError("Tipo de objeto no valido");
+	}
 }
 
 Game::Game()
@@ -528,11 +501,15 @@ void Game::updateObjects(float delta)
 
 	 const int BUTTERFLY_WIDTH = 60;
 	 const int BUTTERFLY_HEIGHT = 46;
+	 constexpr int MIN_SPEED_X = 25;
+	 constexpr int MAX_SPEED_X = 80;
+	 constexpr int MIN_SPEED_Y = 20;
+	 constexpr int MAX_SPEED_Y = 50;
 
 	 const float x = static_cast<float>(randomInt(WINDOW_WIDTH*1/3, WINDOW_WIDTH - BUTTERFLY_WIDTH));
 	 const float y = static_cast<float>(randomInt(0, WINDOW_HEIGHT - BUTTERFLY_HEIGHT));
-	 float velX = static_cast<float>(randomInt(25, 80));
-	 float velY = static_cast<float>(randomInt(20, 50));
+	 float velX = static_cast<float>(randomInt(MIN_SPEED_X,MAX_SPEED_X));
+	 float velY = static_cast<float>(randomInt(MIN_SPEED_Y,MAX_SPEED_Y));
 
 	 if (randomInt(0, 1) == 1) {
 		 velX = -velX;

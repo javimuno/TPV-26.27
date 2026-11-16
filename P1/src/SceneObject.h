@@ -35,8 +35,8 @@ protected:
     static Rectangle readRectangle(std::istream& in) {
         float x, y, width, height;
 
-        if (!(in >> x >> y >> width >> height)) {
-            throw GameError("Rectangulo con algun parametro inavlido");
+        if (!(in >> x >> y >> width >> height) || width <= 0.0f || height <= 0.0f) {
+            throw GameError("Rectangulo con algun parametro no valido");
         }
 
         return Rectangle({ x,y }, width, height);

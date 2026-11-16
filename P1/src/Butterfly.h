@@ -21,7 +21,7 @@ private:
 
 	
 	
-	int dir = 0;
+	
 	static constexpr float DIRECTION_CHANGE_INTERVAL = 1.5f;	
 	static constexpr float FALL_SPEED = 100.0f;
 	static constexpr int HIT_PENALTY = -10;
@@ -40,6 +40,7 @@ private:
 	int animBack;
 
 	void updateAnimation(float delta);
+	void bounceAtEdges();
 	
 
 

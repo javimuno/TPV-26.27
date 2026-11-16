@@ -77,13 +77,16 @@ private:
 	void saveGame() const;
 	void loadGame();
 	void loadObjects(std::istream&file);
+	bool readLevelOption(const std::string& option, std::istream& values);
+	bool readBackgroundColor(std::istream& values);
+	void loadObject(const std::string& type, std::istream& values);
 
 	bool exit;
 
 	
 
 	// Elemento del juego
-	// TODO: añadir atributos para los objetos del juego
+	
 
 	//está en objects, es para acceder a los eventos y municion
 	Bow* mainBow;

@@ -2,7 +2,13 @@
 #include "texture.h"
 #include "game.h"
 
-Butterfly::Butterfly(Game* game, const Rectangle& rect, const Vector2D<>& velocity, Texture* texture) : MobileObject(game, rect, velocity, texture), directionTimer(0.0f),falling(false),flapTimer(0.0f),animBack(1),animationRow(velocity.getX()<0.0f?LEFT_FLAP_ROW:RIGHT_FLAP_ROW)
+Butterfly::Butterfly(Game* game, const Rectangle& rect, const Vector2D<>& velocity, Texture* texture) : 
+MobileObject(game, rect, velocity, texture),
+falling(false),
+directionTimer(0.0f),
+animationRow(velocity.getX() < 0.0f ? LEFT_FLAP_ROW : RIGHT_FLAP_ROW),
+flapTimer(0.0f),
+animBack(1)
 {}
 
 void Butterfly::render() const
@@ -38,7 +44,24 @@ bool Butterfly::update(float delta)
 		}
 	}
 
-	MobileObject::update(delta);
+	MobileObject::update(delta);	
+	//rebote apartado de aqui para acortar el metodo
+	bounceAtEdges();
+
+	if (movingLeft()) {
+		animationRow = LEFT_FLAP_ROW;
+	}
+	else
+	{
+		animationRow = RIGHT_FLAP_ROW;
+	}
+	
+	return true;
+}
+
+//rebote en los bordes
+void Butterfly::bounceAtEdges()
+{
 
 	const float x = getRect().getTopLeftCorner().getX();
 	const float maxX = Game::WINDOW_WIDTH - getRect().getWidth();
@@ -62,16 +85,6 @@ bool Butterfly::update(float delta)
 		move(Vector2D<>(0.0f, maxY - y));
 		reverseVerticalDirection();
 	}
-
-	if (movingLeft()) {
-		animationRow = LEFT_FLAP_ROW;
-	}
-	else
-	{
-		animationRow = RIGHT_FLAP_ROW;
-	}
-	
-	return true;
 }
 
 bool Butterfly::hit(const Rectangle& tip)
@@ -134,3 +147,5 @@ void Butterfly::updateAnimation(float delta)
 	}
 	
 }
+
+

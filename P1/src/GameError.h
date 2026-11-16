@@ -22,13 +22,9 @@ public:
 };
 
 class FileFormatError : public GameError {
-private:
-    std::string filename;
-    int lineNumber;
-
 public:
     FileFormatError(const std::string& filename, int lineNumber,
         const std::string& message)
-        : GameError(filename + ":" + std::to_string(lineNumber) + ": " + message),
-        filename(filename), lineNumber(lineNumber) {}
+        : GameError(filename + ":" + std::to_string(lineNumber) + ": " + message)
+    {}
 };
