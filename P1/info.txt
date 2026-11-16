@@ -1,6 +1,16 @@
-Javier Munoz Garcia
+Javier Muñoz Garcia
 
-Opcionales: ninguno implementado
+Funcionalidades implementadas: lista polimórfica de objetos, mariposas
+que restan puntos al recibir un impacto, cambio de nivel al alcanzar
+el objetivo de puntuación, bonus por explotar varios globos con una
+misma flecha y guardado y carga con Ctrl+S y Ctrl+O.
 
-Cosas que no funcionan correctamente: creo que todo funciona correctamente, y no me aparecen memory leaks
-por ningún lado ni en debug ni en sanitize así que creo que todo va bien.
+Opcionales: ninguno implementado.
+
+Cosas que no funcionan correctamente: en las pruebas realizadas no he
+detectado fallos. He comprobado el arranque, el paso entre niveles
+(reduciendo temporalmente el valor de goal), el guardado y la carga.
+
+El modo Sanitize terminó con código 0.
+
+El verificador del Campus da la entrega por apta.

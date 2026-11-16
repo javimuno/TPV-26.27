@@ -36,12 +36,12 @@ public:
 		return *this;
 	}
 
-	Vector2D operator* (T n)const
+	Vector2D operator* (T n)const //multiplica componentes por un numero
 	{
 		return{ x * n, y * n };
 	}
 
-	T operator*(const Vector2D& other) const{
+	T operator*(const Vector2D& other) const{ //producto escalar de dos vectores
 		return x * other.x + y * other.y;
 	}
 

@@ -19,10 +19,10 @@ private:
 public:
 
 	Arrow(const Rectangle& rect, const Vector2D<>& vel, Texture* textArrow,Game* game);
-	~Arrow()override;
+	~Arrow()override; //descuenta flecha en vuelo
 	void render() const override;
-	bool update(float delta) override;
-	void save(std::ostream& out) const override;
-	Arrow (std::istream& in, Game* game);
+	bool update(float delta) override; //mueve la flecha, comprueba impactos y devuelve false al salri
+	void save(std::ostream& out) const override; //guarda la flecha y los globos que ha explotado
+	Arrow (std::istream& in, Game* game); //reconstruye la flecha del saved.txt
 };
 

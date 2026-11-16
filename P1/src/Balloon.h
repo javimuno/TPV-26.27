@@ -22,8 +22,8 @@ public:
 
 	Balloon(Game* game,const Rectangle& rect, const Vector2D<>& vel, Texture* textBalloon, int color);
 	void render() const override;
-	bool update(float delta) override;
-	bool hit(const Rectangle& obj) override;
-	void save(std::ostream& out)const override;
-	Balloon(std::istream& in, Game* game);
+	bool update(float delta) override; //devuelve false al salir por encima o al explotar	
+	void save(std::ostream& out)const override; //guarda el estado del globo incluida la explosion
+	Balloon(std::istream& in, Game* game); //reconstruye el globo desde saved.txt
+	bool hit(const Rectangle& obj) override; //el primer impacto inicia explosiono y suma puntos (hit inicia y update anima, game lo elimina con update false
 };

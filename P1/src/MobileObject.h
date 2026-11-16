@@ -12,10 +12,12 @@ protected:
         const Vector2D<>& velocity, Texture* texture)
         : SceneObject(game, rect, texture), velocity(velocity) {}
 
-    //constructor de cargar
-    MobileObject(Game* game, std::istream& in, Texture* texture)
+    
+    MobileObject(Game* game, std::istream& in, Texture* texture)//constructor de cargar, primero el rectangulo y luego la velocidad
         : SceneObject(game, in, texture), velocity(readVelocity(in)) {}
 
+
+    //para dar el cambio de sentido a las mariposas cuando llegan a los bordes
     void reverseHorizontalDirection()
     {
         velocity = Vector2D<>(-velocity.getX(), velocity.getY());
@@ -33,8 +35,9 @@ protected:
     {
         return velocity.getX() < 0.0f;
     }
-    //velocidad del objeto movil
-    static Vector2D<> readVelocity(std::istream& in) {
+
+    
+    static Vector2D<> readVelocity(std::istream& in) {//lee las dos componente de la velocidad al cargar
         float x, y;
 
         if (!(in >> x >> y)) {
@@ -44,13 +47,13 @@ protected:
     }
 
 public:
-    bool update(float delta) override
+    bool update(float delta) override //desplaza el objeto aplicando velocidad * tiempo (solo aplica el movimiento)
     {        
         move(velocity * delta);
         return true;
     }
-    //guarda primero el rectangulo de Sceneobject y luego la velocidad de este
-    void save(std::ostream& out) const override
+    
+    void save(std::ostream& out) const override //guarda primero el rectangulo de Sceneobject y luego la velocidad de este
     {
         SceneObject::save(out);
         out << ' ' << velocity.getX() << ' ' << velocity.getY();

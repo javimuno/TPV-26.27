@@ -69,27 +69,22 @@ private:
 	void update(float delta);
 	void handleEvents();
 	void addBalloon();
-	void updateObjects(float delta);
-	void addButterfly();
-	bool loadLevel(int levelNumber);
-	void startLevel();
-	void clearObjects();
-	void saveGame() const;
-	void loadGame();
-	void loadObjects(std::istream&file);
-	bool readLevelOption(const std::string& option, std::istream& values);
-	bool readBackgroundColor(std::istream& values);
-	void loadObject(const std::string& type, std::istream& values);
+	void updateObjects(float delta); //actualiza la escena y borra los objetos que devuelven false
+	void addButterfly(); //añade mariposa con sus parametros
+	bool loadLevel(int levelNumber);//lle la configuracion y devuelve false si falta archivo
+	void startLevel();//crea arco y mariposas iniciales del nivel
+	void clearObjects();//borra los objectos de la escena y pone mainbow a nullptr
+	void saveGame() const;// guarda la partida
+	void loadGame();//carga la partida
+	void loadObjects(std::istream&file);//lee los objetos del guardado y si falla pone la linea de error
+	bool readLevelOption(const std::string& option, std::istream& values); // aplica la opcion de nivel y devuelve false si 
+	bool readBackgroundColor(std::istream& values); //lee y valida el color del fondo
+	void loadObject(const std::string& type, std::istream& values); //construye el objeto a partir del tipo leido
 
 	bool exit;
 
 	
-
-	// Elemento del juego
-	
-
-	//está en objects, es para acceder a los eventos y municion
-	Bow* mainBow;
+	Bow* mainBow; //está en objects, es para acceder a los eventos y municion
 	std::list<SceneObject*> objects;
 	
 
@@ -114,12 +109,12 @@ public:
 	void run();
 
 	// Comprueba si hay algún objeto colocado en ese rectángulo
-	 int checkCollision(const Rectangle& rect);
-	 void arrowCreated();
-	 void arrowDestroyed();
-	 void addObject(SceneObject* object);
-	 int randomInt(int min, int max);
-	 void changeScore(int points);
+	 int checkCollision(const Rectangle& rect); //devuelve el cambio de puntuacion del primer impacto
+	 void arrowCreated(); //informa de flecha creada
+	 void arrowDestroyed();//informa de flecha destruida
+	 void addObject(SceneObject* object); //añade a la escena un objeto que luego Game libera
+	 int randomInt(int min, int max); //generador de aleatorios
+	 void changeScore(int points); //cambio de puntuacion en funcion de lo que haga el jugador
 };
 
 inline Texture*

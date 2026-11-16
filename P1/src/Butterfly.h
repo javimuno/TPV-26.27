@@ -12,10 +12,10 @@ public:
 		const Vector2D <>& velocity, Texture* texture);
 
 	void render() const override;
-	bool update(float delta) override;
-	bool hit(const Rectangle& tip)override;
-	void save(std::ostream& out) const override;
-	Butterfly(std::istream& in, Game* game);
+	bool update(float delta) override; //actualiza el movimient o caida, devuelve false cuando sale de pantalla
+	bool hit(const Rectangle& tip)override;//primer impacto e inicia la caida luego update la va bajando
+	void save(std::ostream& out) const override; //guarda si esta cayendo y en que punto esta la animacion
+	Butterfly(std::istream& in, Game* game); //reconstruye la mariposa desde saved.txt
 
 private:
 
@@ -39,8 +39,8 @@ private:
 	float flapTimer;	
 	int animBack;
 
-	void updateAnimation(float delta);
-	void bounceAtEdges();
+	void updateAnimation(float delta); //avanza el aleteo en funcion del tiempo acumulado
+	void bounceAtEdges(); //rebota al llegar al borde invirtiendo sentido de movimiento
 	
 
 

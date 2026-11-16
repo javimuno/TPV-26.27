@@ -25,16 +25,16 @@ private:
 	int numArrows;
 	bool armed;
 
-	void handleShooting(const SDL_Event& event);
+	void handleShooting(const SDL_Event& event); //reserva una flecha con <- y dispara con -> 
 
 public:
 
 	Bow(const Rectangle& rect, const Vector2D<>& vel,Texture* textBow, const int numArrows, const bool armed, Game* game);
 	void render() const override;
-	bool update(float delta) override;
-	void handleEvent(const SDL_Event& event);
-	bool hasArrows() const;
-	void save(std::ostream& out) const override;
-	Bow(std::istream& in, Game* game);
+	bool update(float delta) override; //mueve el arco dentro de la ventana arriba y abajo
+	void handleEvent(const SDL_Event& event);//lee las teclas de movimiento y delega disparo
+	bool hasArrows() const;//devuelve true si hay municion o una flecha todavia armada
+	void save(std::ostream& out) const override;//guarda rect,vel,muncion y armed
+	Bow(std::istream& in, Game* game); //carga el arco desde saved.txt
 };
 

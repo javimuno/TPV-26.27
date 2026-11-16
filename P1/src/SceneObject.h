@@ -20,7 +20,7 @@ protected:
     SceneObject(Game* game, const Rectangle& rect, Texture* texture)
         : GameObject(game), rect(rect), texture(texture) {}
 
-    SceneObject(Game* game, std::istream& in, Texture* texture)
+    SceneObject(Game* game, std::istream& in, Texture* texture) //recupera rectangulo y textura recibida
         : SceneObject(game, readRectangle(in), texture) {}
 
     const Rectangle& getRect() const { return rect; }
@@ -31,8 +31,8 @@ protected:
         rect.move(displacement);
     }
 
-    //carga rectangulo del objeto
-    static Rectangle readRectangle(std::istream& in) {
+    
+    static Rectangle readRectangle(std::istream& in) {//carga rectangulo del objeto, lee posicion y valida dimensiones
         float x, y, width, height;
 
         if (!(in >> x >> y >> width >> height) || width <= 0.0f || height <= 0.0f) {
@@ -43,8 +43,8 @@ protected:
     }
 
 public:
-    virtual bool hit(const Rectangle&) { return false; }
-    virtual void save(std::ostream& out) const {
+    virtual bool hit(const Rectangle&) { return false; } //por defecto el objeto no recibe impactos
+    virtual void save(std::ostream& out) const { //escribe posicon y tamaño del objeto
         out << rect.getTopLeftCorner().getX() << ' '
             << rect.getTopLeftCorner().getY() << ' '
             << rect.getWidth() << ' '
