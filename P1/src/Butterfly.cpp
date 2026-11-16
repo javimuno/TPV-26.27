@@ -27,6 +27,7 @@ bool Butterfly::update(float delta)
 
 	updateAnimation(delta);
 	directionTimer += delta;
+
 	if (directionTimer >= DIRECTION_CHANGE_INTERVAL) {
 		directionTimer = 0.0f;
 		int direcionChoice = getGame()->randomInt(0, 2);
@@ -54,13 +55,12 @@ bool Butterfly::update(float delta)
 	else
 	{
 		animationRow = RIGHT_FLAP_ROW;
-	}
-	
+	}	
 	return true;
 }
 
-//rebote en los bordes
-void Butterfly::bounceAtEdges()
+
+void Butterfly::bounceAtEdges() //rebote en los bordes
 {
 
 	const float x = getRect().getTopLeftCorner().getX();
